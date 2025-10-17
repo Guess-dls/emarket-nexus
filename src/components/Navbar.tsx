@@ -1,0 +1,68 @@
+import { ShoppingCart, Search, User, Menu, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
+
+const Navbar = () => {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary-glow" />
+          <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+            eMarket
+          </span>
+        </Link>
+
+        {/* Search Bar - Hidden on mobile */}
+        <div className="hidden md:flex flex-1 max-w-xl mx-8">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Rechercher des produits..."
+              className="w-full pl-10 bg-muted/50 border-border focus-visible:ring-primary"
+            />
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="hidden md:flex">
+            <Heart className="h-5 w-5" />
+          </Button>
+          
+          <Button variant="ghost" size="icon" className="relative">
+            <ShoppingCart className="h-5 w-5" />
+            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+              0
+            </span>
+          </Button>
+
+          <Button variant="ghost" size="icon">
+            <User className="h-5 w-5" />
+          </Button>
+
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Menu className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile Search */}
+      <div className="md:hidden px-4 pb-3">
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Rechercher..."
+            className="w-full pl-10 bg-muted/50"
+          />
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;
