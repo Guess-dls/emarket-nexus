@@ -25,6 +25,15 @@ export const useAuth = () => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          if (!session.user.email_confirmed_at) {
+            setUserRole(null);
+            setLoading(false);
+            // Déconnexion différée pour éviter les deadlocks dans le callback
+            setTimeout(() => {
+              supabase.auth.signOut();
+            }, 0);
+            return;
+          }
           // Fetch user role after auth state changes
           setTimeout(() => {
             fetchUserRole(session.user.id);
@@ -42,6 +51,12 @@ export const useAuth = () => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        if (!session.user.email_confirmed_at) {
+          setUserRole(null);
+          setLoading(false);
+          supabase.auth.signOut();
+          return;
+        }
         fetchUserRole(session.user.id);
       } else {
         setLoading(false);
