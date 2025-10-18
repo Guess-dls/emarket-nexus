@@ -24,22 +24,54 @@ interface Product {
   slug: string;
 }
 
+interface Category {
+  id: string;
+  nom: string;
+  slug: string;
+  productCount?: number;
+}
+
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const categories = [
-    { name: "Électronique", icon: Smartphone, productCount: 1250, slug: "electronique" },
-    { name: "Ordinateurs", icon: Laptop, productCount: 830, slug: "ordinateurs" },
-    { name: "Montres", icon: Watch, productCount: 420, slug: "montres" },
-    { name: "Audio", icon: Headphones, productCount: 680, slug: "audio" },
-    { name: "Photo", icon: Camera, productCount: 320, slug: "photo" },
-    { name: "Gaming", icon: Gamepad, productCount: 560, slug: "gaming" },
-    { name: "Mode", icon: Shirt, productCount: 2100, slug: "mode" },
-    { name: "Maison", icon: HomeIcon, productCount: 1400, slug: "maison" },
-  ];
+  const [categories, setCategories] = useState<Category[]>([]);
+  const categoryIcons: Record<string, any> = {
+    electronique: Smartphone,
+    ordinateurs: Laptop,
+    montres: Watch,
+    audio: Headphones,
+    photo: Camera,
+    gaming: Gamepad,
+    mode: Shirt,
+    maison: HomeIcon,
+  };
 
   useEffect(() => {
     loadProducts();
+    loadCategories();
   }, []);
+
+  const loadCategories = async () => {
+    const { data: categoriesData, error } = await supabase
+      .from("categories")
+      .select("id, nom, slug");
+
+    if (!error && categoriesData) {
+      // Count products for each category
+      const categoriesWithCount = await Promise.all(
+        categoriesData.map(async (cat) => {
+          const { count } = await supabase
+            .from("produits")
+            .select("*", { count: "exact", head: true })
+            .eq("id_categorie", cat.id)
+            .eq("statut", "en_ligne");
+          
+          return { ...cat, productCount: count || 0 };
+        })
+      );
+      
+      setCategories(categoriesWithCount);
+    }
+  };
 
   const loadProducts = async () => {
     const { data, error } = await supabase
@@ -72,7 +104,13 @@ const Index = () => {
             
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
               {categories.map((category) => (
-                <CategoryCard key={category.slug} {...category} />
+                <CategoryCard 
+                  key={category.slug} 
+                  name={category.nom}
+                  icon={categoryIcons[category.slug] || Smartphone}
+                  productCount={category.productCount || 0}
+                  slug={category.slug}
+                />
               ))}
             </div>
           </div>
