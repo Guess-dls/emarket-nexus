@@ -32,23 +32,40 @@ const SellerDashboard = () => {
       <Navbar />
       
       <main className="flex-1 container mx-auto px-4 py-8 overflow-x-hidden">
-        <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="w-full md:w-auto">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 break-words">Tableau de bord Vendeur</h1>
-            <p className="text-muted-foreground">Gérez vos produits et suivez vos ventes</p>
-            {userRole?.statut === "en_attente" && (
-              <Badge variant="outline" className="mt-2">
-                Compte en attente de validation
-              </Badge>
-            )}
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="w-full md:w-auto">
+              <h1 className="text-3xl md:text-4xl font-bold mb-2 break-words">Tableau de bord Vendeur</h1>
+              <p className="text-muted-foreground">Gérez vos produits et suivez vos ventes</p>
+              {userRole?.statut === "en_attente" && (
+                <Badge variant="outline" className="mt-2">
+                  Compte en attente de validation
+                </Badge>
+              )}
+            </div>
+            <div className="flex gap-2 w-full md:w-auto flex-wrap">
+              <Button variant="outline" onClick={signOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Déconnexion
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2 w-full md:w-auto flex-wrap">
-            <AddProductDialog />
-            <Button variant="outline" onClick={signOut}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Déconnexion
-            </Button>
-          </div>
+
+          {/* Bouton principal Vendre */}
+          <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center gap-4">
+                <Package className="h-12 w-12 text-primary" />
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Commencez à vendre</h2>
+                  <p className="text-muted-foreground mb-4">
+                    Ajoutez votre premier produit et commencez votre activité
+                  </p>
+                </div>
+                <AddProductDialog />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
