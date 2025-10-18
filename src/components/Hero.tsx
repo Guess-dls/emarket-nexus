@@ -75,9 +75,7 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-1/4 left-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-1/4 right-0 w-72 h-72 bg-primary-glow/5 rounded-full blur-3xl -z-10" />
+      {/* Decorative elements - removed blur for crisp text display */}
     </section>
   );
 };
