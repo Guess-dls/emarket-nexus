@@ -40,11 +40,11 @@ const Navbar = () => {
             </span>
           </Button>
 
-          <Link to="/auth">
-            <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/auth">
               <User className="h-5 w-5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
 
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
