@@ -90,11 +90,28 @@ export const useAuth = () => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      return { error };
+      
+      if (error) {
+        return { error };
+      }
+      
+      // Vérifier si l'email est confirmé
+      if (data.user && !data.user.email_confirmed_at) {
+        // Déconnecter l'utilisateur
+        await supabase.auth.signOut();
+        return { 
+          error: { 
+            message: "Veuillez confirmer votre email avant de vous connecter. Vérifiez votre boîte de réception.",
+            name: "EmailNotConfirmed"
+          } as any 
+        };
+      }
+      
+      return { error: null };
     } catch (error: any) {
       return { error };
     }
