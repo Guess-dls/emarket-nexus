@@ -142,7 +142,7 @@ export const AddProductDialog = () => {
         stock: Number(values.stock),
         id_categorie: values.id_categorie,
         id_vendeur: user.id,
-        statut: "brouillon",
+        statut: "en_ligne",
         images: imageUrls,
       });
 
@@ -181,7 +181,7 @@ export const AddProductDialog = () => {
         <DialogHeader>
           <DialogTitle>Ajouter un nouveau produit</DialogTitle>
           <DialogDescription>
-            Remplissez les informations du produit. Il sera créé en mode brouillon.
+            Remplissez les informations du produit. Il sera publié immédiatement.
           </DialogDescription>
         </DialogHeader>
 
