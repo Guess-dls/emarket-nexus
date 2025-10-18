@@ -133,11 +133,21 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setUserRole(null);
-    navigate("/");
+    try {
+      // Nettoyer l'état local d'abord
+      setUser(null);
+      setSession(null);
+      setUserRole(null);
+      
+      // Ensuite déconnecter de Supabase (ignorer les erreurs de session)
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (error) {
+      // Ignorer les erreurs de session déjà invalide
+      console.log("Déconnexion avec erreur ignorée:", error);
+    } finally {
+      // Toujours rediriger vers la page d'accueil
+      navigate("/");
+    }
   };
 
   return {
