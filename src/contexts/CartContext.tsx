@@ -54,11 +54,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       `)
       .eq("id_utilisateur", user.id);
 
-    if (!error && data) {
-      setItems(data.map(item => ({
-        ...item,
+    if (error) {
+      console.error("Cart loading error:", error);
+      setLoading(false);
+      return;
+    }
+
+    if (data) {
+      const formattedItems = data.map(item => ({
+        id: item.id,
+        id_produit: item.id_produit,
+        quantite: item.quantite,
         produit: Array.isArray(item.produits) ? item.produits[0] : item.produits
-      })));
+      })).filter(item => item.produit); // Remove items with missing products
+
+      setItems(formattedItems);
     }
     setLoading(false);
   };
@@ -92,20 +102,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const { error } = await supabase.from("panier").insert({
-      id_utilisateur: user.id,
-      id_produit: productId,
-      quantite: quantity,
-    });
-
-    if (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible d'ajouter au panier",
-        variant: "destructive",
+      const { error } = await supabase.from("panier").insert({
+        id_utilisateur: user.id,
+        id_produit: productId,
+        quantite: quantity,
       });
-      return;
-    }
+
+      if (error) {
+        console.error("Add to cart error:", error);
+        toast({
+          title: "Erreur",
+          description: "Impossible d'ajouter au panier",
+          variant: "destructive",
+        });
+        return;
+      }
 
     toast({
       title: "Ajouté au panier",

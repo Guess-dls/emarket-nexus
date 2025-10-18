@@ -64,71 +64,26 @@ const Checkout = () => {
         .select()
         .single();
 
-      if (commandeError) throw commandeError;
-
-      // Create order items and vendor orders
-      const orderItems = [];
-      const vendorOrders = [];
-      
-      for (const item of items) {
-        // Add to order items
-        orderItems.push({
-          id_commande: commande.id,
-          id_produit: item.id_produit,
-          quantite: item.quantite,
-          prix_unitaire: item.produit?.prix || 0,
-        });
-
-        // Get product vendor ID
-        const { data: product } = await supabase
-          .from("produits")
-          .select("id_vendeur")
-          .eq("id", item.id_produit)
-          .single();
-
-        if (product) {
-          vendorOrders.push({
-            id_vendeur: product.id_vendeur,
-            id_commande: commande.id,
-            id_produit: item.id_produit,
-            quantite: item.quantite,
-            prix_unitaire: item.produit?.prix || 0,
-            statut: "en_attente",
-          });
-        }
+      if (commandeError) {
+        console.error("Order creation error:", commandeError);
+        throw new Error("Erreur lors de la création de la commande");
       }
 
-      // Insert order items
+      // Create order items (trigger handles stock and vendor links)
+      const orderItems = items.map(item => ({
+        id_commande: commande.id,
+        id_produit: item.id_produit,
+        quantite: item.quantite,
+        prix_unitaire: item.produit?.prix || 0,
+      }));
+
       const { error: itemsError } = await supabase
         .from("commande_items")
         .insert(orderItems);
 
-      if (itemsError) throw itemsError;
-
-      // Insert vendor orders
-      const { error: vendorError } = await supabase
-        .from("vendeur_commandes")
-        .insert(vendorOrders);
-
-      if (vendorError) throw vendorError;
-
-      // Update product stock and sales
-      for (const item of items) {
-        const { data: currentProduct } = await supabase
-          .from("produits")
-          .select("stock, ventes_total")
-          .eq("id", item.id_produit)
-          .single();
-
-        if (currentProduct) {
-          await supabase
-            .from("produits")
-            .update({ 
-              stock: currentProduct.stock - item.quantite,
-              ventes_total: (currentProduct.ventes_total || 0) + item.quantite
-            })
-            .eq("id", item.id_produit);
-        }
+      if (itemsError) {
+        console.error("Order items error:", itemsError);
+        throw new Error("Erreur lors de l'ajout des articles");
       }
 
       await clearCart();
@@ -139,11 +94,11 @@ const Checkout = () => {
       });
 
       navigate("/client-dashboard");
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Checkout error:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la commande",
+        description: error.message || "Une erreur est survenue lors de la commande",
         variant: "destructive",
       });
     } finally {
