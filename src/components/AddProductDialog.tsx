@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Plus } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Plus, X, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -31,6 +31,8 @@ export const AddProductDialog = () => {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<Array<{ id: string; nom: string }>>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -62,7 +64,41 @@ export const AddProductDialog = () => {
     setOpen(newOpen);
     if (newOpen) {
       loadCategories();
+    } else {
+      // Reset images when closing
+      setSelectedImages([]);
+      setImagePreviews([]);
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const totalImages = selectedImages.length + files.length;
+
+    if (totalImages > 5) {
+      toast({
+        title: "Limite atteinte",
+        description: "Vous ne pouvez ajouter que 5 images maximum",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedImages([...selectedImages, ...files]);
+    
+    // Create previews
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (values: ProductFormValues) => {
@@ -70,6 +106,26 @@ export const AddProductDialog = () => {
     
     setLoading(true);
     try {
+      // Upload images first
+      const imageUrls: string[] = [];
+      
+      for (const file of selectedImages) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
+        
+        const { error: uploadError, data } = await supabase.storage
+          .from('product-images')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+
+        imageUrls.push(publicUrl);
+      }
+
       // Generate slug from nom
       const slug = values.nom
         .toLowerCase()
@@ -87,6 +143,7 @@ export const AddProductDialog = () => {
         id_categorie: values.id_categorie,
         id_vendeur: user.id,
         statut: "brouillon",
+        images: imageUrls,
       });
 
       if (error) throw error;
@@ -97,8 +154,11 @@ export const AddProductDialog = () => {
       });
 
       form.reset();
+      setSelectedImages([]);
+      setImagePreviews([]);
       setOpen(false);
     } catch (error) {
+      console.error('Error creating product:', error);
       toast({
         title: "Erreur",
         description: "Impossible de créer le produit",
@@ -212,6 +272,48 @@ export const AddProductDialog = () => {
                   </FormItem>
                 )}
               />
+            </div>
+
+            {/* Images upload section */}
+            <div className="space-y-2">
+              <FormLabel>Images du produit (max 5)</FormLabel>
+              <FormDescription>
+                Ajoutez jusqu'à 5 images de votre produit
+              </FormDescription>
+              
+              {imagePreviews.length < 5 && (
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="flex-1"
+                  />
+                  <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                </div>
+              )}
+
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-md border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
