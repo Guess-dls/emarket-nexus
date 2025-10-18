@@ -258,6 +258,7 @@ const ClientDashboard = () => {
     const variants: Record<string, "default" | "secondary" | "destructive"> = {
       en_attente: "secondary",
       en_cours: "default",
+      expediee: "default",
       livree: "default",
       annulee: "destructive",
     };
@@ -265,6 +266,7 @@ const ClientDashboard = () => {
     const labels: Record<string, string> = {
       en_attente: "En attente",
       en_cours: "En cours",
+      expediee: "Expédiée",
       livree: "Livrée",
       annulee: "Annulée",
     };

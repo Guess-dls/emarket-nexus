@@ -65,6 +65,28 @@ const SellerDashboard = () => {
       navigate("/auth");
     } else if (user) {
       loadDashboardData();
+
+      // Setup realtime subscription for order updates
+      const channel = supabase
+        .channel('vendor-orders')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'vendeur_commandes',
+            filter: `id_vendeur=eq.${user.id}`,
+          },
+          () => {
+            console.log('Vendor order update detected, reloading...');
+            loadOrders();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        channel.unsubscribe();
+      };
     }
   }, [user, userRole, loading, navigate]);
 

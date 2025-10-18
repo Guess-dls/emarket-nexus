@@ -377,6 +377,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      update_commande_status: {
+        Args: { _commande_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "client" | "vendeur" | "admin"
