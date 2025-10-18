@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -253,6 +254,9 @@ const ClientDashboard = () => {
       loadOrders();
     }
   };
+
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderDetailOpen, setOrderDetailOpen] = useState(false);
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive"> = {
@@ -564,7 +568,10 @@ const ClientDashboard = () => {
                                 Annuler
                               </Button>
                             )}
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" onClick={() => {
+                              setSelectedOrder(order);
+                              setOrderDetailOpen(true);
+                            }}>
                               <Eye className="h-4 w-4 mr-2" />
                               Détails
                             </Button>
@@ -652,6 +659,123 @@ const ClientDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Order Details Dialog */}
+        {selectedOrder && (
+          <Dialog open={orderDetailOpen} onOpenChange={setOrderDetailOpen}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Détails de la commande</DialogTitle>
+                <DialogDescription>
+                  Commande #{selectedOrder.id.slice(0, 8)}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                {/* Order Status */}
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Statut</p>
+                    <p className="font-semibold">{getStatusBadge(selectedOrder.statut)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Date</p>
+                    <p className="font-semibold">
+                      {new Date(selectedOrder.created_at).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Products List */}
+                <div className="border rounded-lg p-4 space-y-3">
+                  <h4 className="font-semibold">Articles commandés</h4>
+                  {selectedOrder.commande_items?.map((item, idx) => (
+                    <div key={idx} className="flex gap-3 items-center">
+                      <img
+                        src={item.produits?.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"}
+                        alt={item.produits?.nom}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium">{item.produits?.nom}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.quantite} × {Number(item.prix_unitaire).toFixed(2)} € = {(item.quantite * Number(item.prix_unitaire)).toFixed(2)} €
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Delivery Info */}
+                <div className="p-4 border rounded-lg space-y-2">
+                  <h4 className="font-semibold">Informations de livraison</h4>
+                  <p className="text-sm">
+                    <span className="text-muted-foreground">Adresse:</span>{" "}
+                    {selectedOrder.adresse_livraison}
+                  </p>
+                  {selectedOrder.methode_paiement && (
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Mode de paiement:</span>{" "}
+                      {selectedOrder.methode_paiement}
+                    </p>
+                  )}
+                </div>
+
+                {/* Total */}
+                <div className="p-4 border rounded-lg bg-muted/50">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Total de la commande</span>
+                    <span className="text-2xl font-bold text-primary">
+                      {Number(selectedOrder.total).toFixed(2)} €
+                    </span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2">
+                  {selectedOrder.statut === "en_attente" && (
+                    <>
+                      <Button
+                        variant="destructive"
+                        onClick={() => {
+                          deleteOrder(selectedOrder.id, selectedOrder.statut);
+                          setOrderDetailOpen(false);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Supprimer
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          cancelOrder(selectedOrder.id, selectedOrder.statut);
+                          setOrderDetailOpen(false);
+                        }}
+                      >
+                        Annuler
+                      </Button>
+                    </>
+                  )}
+                  {selectedOrder.statut === "en_cours" && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        cancelOrder(selectedOrder.id, selectedOrder.statut);
+                        setOrderDetailOpen(false);
+                      }}
+                    >
+                      Annuler
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </main>
 
       <Footer />

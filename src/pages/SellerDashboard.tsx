@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut, Edit, Trash2, Eye } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -200,12 +201,15 @@ const SellerDashboard = () => {
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    console.log('Updating order status:', { orderId, newStatus });
+    
     const { error } = await supabase
       .from("vendeur_commandes")
       .update({ statut: newStatus })
       .eq("id", orderId);
 
     if (error) {
+      console.error('Update status error:', error);
       toast({
         title: "Erreur",
         description: "Impossible de mettre à jour le statut",
@@ -219,6 +223,32 @@ const SellerDashboard = () => {
       loadOrders();
     }
   };
+
+  const deleteOrder = async (orderId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) return;
+
+    const { error } = await supabase
+      .from("vendeur_commandes")
+      .delete()
+      .eq("id", orderId);
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la commande",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: "Commande supprimée avec succès",
+      });
+      loadOrders();
+    }
+  };
+
+  const [selectedOrder, setSelectedOrder] = useState<VendorOrder | null>(null);
+  const [orderDetailOpen, setOrderDetailOpen] = useState(false);
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive"> = {
@@ -457,12 +487,22 @@ const SellerDashboard = () => {
 
                         <div className="flex gap-2 pt-2 border-t">
                           {order.statut === "en_attente" && (
-                            <Button
-                              size="sm"
-                              onClick={() => updateOrderStatus(order.id, "en_cours")}
-                            >
-                              Accepter
-                            </Button>
+                            <>
+                              <Button
+                                size="sm"
+                                onClick={() => updateOrderStatus(order.id, "en_cours")}
+                              >
+                                Accepter
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => deleteOrder(order.id)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Supprimer
+                              </Button>
+                            </>
                           )}
                           {order.statut === "en_cours" && (
                             <Button
@@ -484,6 +524,10 @@ const SellerDashboard = () => {
                           <Button
                             size="sm"
                             variant="outline"
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setOrderDetailOpen(true);
+                            }}
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             Détails
@@ -505,6 +549,130 @@ const SellerDashboard = () => {
             onOpenChange={setEditDialogOpen}
             onSuccess={loadProducts}
           />
+        )}
+
+        {/* Order Details Dialog */}
+        {selectedOrder && (
+          <Dialog open={orderDetailOpen} onOpenChange={setOrderDetailOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Détails de la commande</DialogTitle>
+                <DialogDescription>
+                  Commande #{selectedOrder.id_commande.slice(0, 8)}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                {/* Product Info */}
+                <div className="flex gap-4 p-4 border rounded-lg">
+                  <img
+                    src={selectedOrder.produits?.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"}
+                    alt={selectedOrder.produits?.nom}
+                    className="w-24 h-24 object-cover rounded-md"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg">{selectedOrder.produits?.nom}</h3>
+                    <div className="mt-2 space-y-1 text-sm">
+                      <p>
+                        <span className="text-muted-foreground">Prix unitaire:</span>{" "}
+                        <span className="font-bold">{Number(selectedOrder.prix_unitaire).toFixed(2)} €</span>
+                      </p>
+                      <p>
+                        <span className="text-muted-foreground">Quantité:</span>{" "}
+                        <span className="font-bold">{selectedOrder.quantite}</span>
+                      </p>
+                      <p>
+                        <span className="text-muted-foreground">Total:</span>{" "}
+                        <span className="font-bold text-primary text-lg">
+                          {(Number(selectedOrder.prix_unitaire) * selectedOrder.quantite).toFixed(2)} €
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  {getStatusBadge(selectedOrder.statut)}
+                </div>
+
+                {/* Customer Info */}
+                <div className="p-4 border rounded-lg space-y-2">
+                  <h4 className="font-semibold">Informations client</h4>
+                  <div className="text-sm space-y-1">
+                    <p>
+                      <span className="text-muted-foreground">Nom:</span>{" "}
+                      {selectedOrder.commandes?.profiles?.nom || "N/A"}
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">Email:</span>{" "}
+                      {selectedOrder.commandes?.profiles?.email || "N/A"}
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">Adresse de livraison:</span>{" "}
+                      {selectedOrder.commandes?.adresse_livraison || "N/A"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Order Timeline */}
+                <div className="p-4 border rounded-lg space-y-2">
+                  <h4 className="font-semibold">Informations de commande</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Date: {new Date(selectedOrder.created_at).toLocaleDateString("fr-FR", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2">
+                  {selectedOrder.statut === "en_attente" && (
+                    <>
+                      <Button
+                        onClick={() => {
+                          updateOrderStatus(selectedOrder.id, "en_cours");
+                          setOrderDetailOpen(false);
+                        }}
+                      >
+                        Accepter la commande
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => {
+                          deleteOrder(selectedOrder.id);
+                          setOrderDetailOpen(false);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Supprimer
+                      </Button>
+                    </>
+                  )}
+                  {selectedOrder.statut === "en_cours" && (
+                    <Button
+                      onClick={() => {
+                        updateOrderStatus(selectedOrder.id, "expediee");
+                        setOrderDetailOpen(false);
+                      }}
+                    >
+                      Marquer comme expédiée
+                    </Button>
+                  )}
+                  {selectedOrder.statut === "expediee" && (
+                    <Button
+                      onClick={() => {
+                        updateOrderStatus(selectedOrder.id, "livree");
+                        setOrderDetailOpen(false);
+                      }}
+                    >
+                      Marquer comme livrée
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
       </main>
 
