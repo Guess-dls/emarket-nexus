@@ -98,11 +98,6 @@ const SellerDashboard = () => {
             <div className="w-full md:w-auto">
               <h1 className="text-3xl md:text-4xl font-bold mb-2 break-words">Tableau de bord Vendeur</h1>
               <p className="text-muted-foreground">Gérez vos produits et suivez vos ventes</p>
-              {userRole?.statut === "en_attente" && (
-                <Badge variant="outline" className="mt-2">
-                  Compte en attente de validation
-                </Badge>
-              )}
             </div>
             <div className="flex gap-2 w-full md:w-auto flex-wrap">
               <Button variant="outline" onClick={signOut}>
