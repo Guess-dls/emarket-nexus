@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut, Plus } from "lucide-react";
+import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
+import { AddProductDialog } from "@/components/AddProductDialog";
 
 const SellerDashboard = () => {
   const { user, userRole, loading, signOut } = useAuth();
@@ -30,10 +31,10 @@ const SellerDashboard = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Tableau de bord Vendeur</h1>
+      <main className="flex-1 container mx-auto px-4 py-8 overflow-x-hidden">
+        <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="w-full md:w-auto">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 break-words">Tableau de bord Vendeur</h1>
             <p className="text-muted-foreground">Gérez vos produits et suivez vos ventes</p>
             {userRole?.statut === "en_attente" && (
               <Badge variant="outline" className="mt-2">
@@ -41,11 +42,8 @@ const SellerDashboard = () => {
               </Badge>
             )}
           </div>
-          <div className="flex gap-2">
-            <Button className="bg-gradient-luxury hover:opacity-90">
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter un produit
-            </Button>
+          <div className="flex gap-2 w-full md:w-auto flex-wrap">
+            <AddProductDialog />
             <Button variant="outline" onClick={signOut}>
               <LogOut className="mr-2 h-4 w-4" />
               Déconnexion
