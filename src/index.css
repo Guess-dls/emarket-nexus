@@ -9,11 +9,17 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Luxury Gold E-Commerce Theme */
-    --background: 0 0% 100%;
+    --background: 210 40% 96%;
     --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 10%;
+    
+    /* Dashboard Card Colors */
+    --card-blue: 217 91% 60%;
+    --card-green: 142 76% 36%;
+    --card-purple: 262 83% 58%;
+    --card-orange: 25 95% 53%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;

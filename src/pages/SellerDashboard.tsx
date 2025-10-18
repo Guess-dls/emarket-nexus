@@ -69,47 +69,47 @@ const SellerDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-border/50 hover:shadow-elegant transition-shadow">
+          <Card className="border-0 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white hover:shadow-xl transition-all hover:scale-105">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Produits</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Produits</CardTitle>
+              <Package className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Total de produits</p>
+              <p className="text-xs text-white/80">Total de produits</p>
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 hover:shadow-elegant transition-shadow">
+          <Card className="border-0 bg-gradient-to-br from-teal-500 to-teal-600 text-white hover:shadow-xl transition-all hover:scale-105">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ventes</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Ventes</CardTitle>
+              <ShoppingCart className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Commandes reçues</p>
+              <p className="text-xs text-white/80">Commandes reçues</p>
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 hover:shadow-elegant transition-shadow">
+          <Card className="border-0 bg-gradient-to-br from-amber-500 to-amber-600 text-white hover:shadow-xl transition-all hover:scale-105">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Revenus</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Revenus</CardTitle>
+              <DollarSign className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0 €</div>
-              <p className="text-xs text-muted-foreground">Total des revenus</p>
+              <p className="text-xs text-white/80">Total des revenus</p>
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 hover:shadow-elegant transition-shadow">
+          <Card className="border-0 bg-gradient-to-br from-pink-500 to-pink-600 text-white hover:shadow-xl transition-all hover:scale-105">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tendance</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Tendance</CardTitle>
+              <TrendingUp className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0%</div>
-              <p className="text-xs text-muted-foreground">Ce mois-ci</p>
+              <p className="text-xs text-white/80">Ce mois-ci</p>
             </CardContent>
           </Card>
         </div>

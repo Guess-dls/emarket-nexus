@@ -42,47 +42,47 @@ const ClientDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-border/50 hover:shadow-elegant transition-shadow">
+          <Card className="border-0 bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:shadow-xl transition-all hover:scale-105">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Commandes</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Commandes</CardTitle>
+              <Package className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Total des commandes</p>
+              <p className="text-xs text-white/80">Total des commandes</p>
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 hover:shadow-elegant transition-shadow">
+          <Card className="border-0 bg-gradient-to-br from-green-500 to-green-600 text-white hover:shadow-xl transition-all hover:scale-105">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Favoris</CardTitle>
-              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Favoris</CardTitle>
+              <ShoppingBag className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Produits favoris</p>
+              <p className="text-xs text-white/80">Produits favoris</p>
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 hover:shadow-elegant transition-shadow">
+          <Card className="border-0 bg-gradient-to-br from-purple-500 to-purple-600 text-white hover:shadow-xl transition-all hover:scale-105">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Notifications</CardTitle>
-              <Bell className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Notifications</CardTitle>
+              <Bell className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Non lues</p>
+              <p className="text-xs text-white/80">Non lues</p>
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 hover:shadow-elegant transition-shadow">
+          <Card className="border-0 bg-gradient-to-br from-orange-500 to-orange-600 text-white hover:shadow-xl transition-all hover:scale-105">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Profil</CardTitle>
-              <User className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Profil</CardTitle>
+              <User className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
               <div className="text-sm font-medium truncate">{user?.email}</div>
-              <p className="text-xs text-muted-foreground">Compte actif</p>
+              <p className="text-xs text-white/80">Compte actif</p>
             </CardContent>
           </Card>
         </div>
