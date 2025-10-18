@@ -79,6 +79,46 @@ const ClientDashboard = () => {
       navigate("/auth");
     } else if (user) {
       loadDashboardData();
+      
+      // Setup realtime subscription for order updates
+      const channel = supabase
+        .channel('client-orders')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'commandes',
+            filter: `id_client=eq.${user.id}`,
+          },
+          () => {
+            console.log('Order update detected, reloading...');
+            loadOrders();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'vendeur_commandes',
+          },
+          () => {
+            console.log('Vendor order update detected, reloading...');
+            loadOrders();
+          }
+        )
+        .subscribe();
+
+      // Also poll every 10 seconds
+      const interval = setInterval(() => {
+        loadOrders();
+      }, 10000);
+
+      return () => {
+        channel.unsubscribe();
+        clearInterval(interval);
+      };
     }
   }, [user, userRole, authLoading, navigate]);
 
