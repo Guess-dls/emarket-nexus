@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { 
   ShoppingBag, 
   Package, 
@@ -61,6 +62,7 @@ interface Order {
 const ClientDashboard = () => {
   const { user, userRole, loading: authLoading, signOut } = useAuth();
   const { items, total, removeFromCart, updateQuantity, itemCount } = useCart();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -141,6 +143,74 @@ const ClientDashboard = () => {
         totalSpent: data.reduce((sum, order) => sum + Number(order.total), 0),
         favoris: 0,
       });
+    }
+  };
+
+  const deleteOrder = async (orderId: string, status: string) => {
+    // Only allow deletion for pending orders
+    if (status !== "en_attente") {
+      toast({
+        title: "Action impossible",
+        description: "Vous ne pouvez supprimer que les commandes en attente",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) return;
+
+    const { error } = await supabase
+      .from("commandes")
+      .delete()
+      .eq("id", orderId)
+      .eq("id_client", user!.id);
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la commande",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: "Commande supprimée avec succès",
+      });
+      loadOrders();
+    }
+  };
+
+  const cancelOrder = async (orderId: string, status: string) => {
+    // Only allow cancellation for pending or in-progress orders
+    if (!["en_attente", "en_cours"].includes(status)) {
+      toast({
+        title: "Action impossible",
+        description: "Cette commande ne peut plus être annulée",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!confirm("Êtes-vous sûr de vouloir annuler cette commande ?")) return;
+
+    const { error } = await supabase
+      .from("commandes")
+      .update({ statut: "annulee" })
+      .eq("id", orderId)
+      .eq("id_client", user!.id);
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'annuler la commande",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: "Commande annulée avec succès",
+      });
+      loadOrders();
     }
   };
 
@@ -430,10 +500,33 @@ const ClientDashboard = () => {
                               {Number(order.total).toFixed(2)} €
                             </p>
                           </div>
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4 mr-2" />
-                            Voir détails
-                          </Button>
+                          <div className="flex gap-2">
+                            {order.statut === "en_attente" && (
+                              <>
+                                <Button 
+                                  variant="destructive" 
+                                  size="sm"
+                                  onClick={() => deleteOrder(order.id, order.statut)}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Supprimer
+                                </Button>
+                              </>
+                            )}
+                            {(order.statut === "en_attente" || order.statut === "en_cours") && (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => cancelOrder(order.id, order.statut)}
+                              >
+                                Annuler
+                              </Button>
+                            )}
+                            <Button variant="outline" size="sm">
+                              <Eye className="h-4 w-4 mr-2" />
+                              Détails
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}

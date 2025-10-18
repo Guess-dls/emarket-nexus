@@ -110,22 +110,42 @@ const SellerDashboard = () => {
         commandes:id_commande (
           id,
           adresse_livraison,
-          profiles:id_client (
-            nom,
-            email
-          )
+          id_client
         )
       `)
       .eq("id_vendeur", user.id)
       .order("created_at", { ascending: false })
       .limit(50);
 
+    console.log("Vendor orders query:", { data, error, userId: user.id });
+
     if (!error && data) {
-      setOrders(data as any);
+      // Fetch client info separately for each order
+      const ordersWithClients = await Promise.all(
+        data.map(async (order: any) => {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("nom, email")
+            .eq("id", order.commandes?.id_client)
+            .single();
+          
+          return {
+            ...order,
+            commandes: {
+              ...order.commandes,
+              profiles: profile
+            }
+          };
+        })
+      );
+
+      setOrders(ordersWithClients as any);
       const totalRevenue = data.reduce((sum, order) => 
         sum + (Number(order.prix_unitaire) * order.quantite), 0
       );
       setStats(prev => ({ ...prev, totalOrders: data.length, totalRevenue }));
+    } else if (error) {
+      console.error("Error loading vendor orders:", error);
     }
   };
 
