@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
   id: string;
@@ -27,6 +28,7 @@ const ProductCard = ({
   seller,
   badge,
 }: ProductCardProps) => {
+  const { addToCart } = useCart();
   const discount = originalPrice
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
@@ -100,7 +102,14 @@ const ProductCard = ({
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity group">
+        <Button 
+          className="w-full bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity group"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            addToCart(id);
+          }}
+        >
           <ShoppingCart className="mr-2 h-4 w-4" />
           Ajouter au panier
         </Button>
