@@ -273,9 +273,9 @@ const ClientDashboard = () => {
                   <div className="text-center py-12">
                     <ShoppingCart className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
                     <p className="text-muted-foreground mb-4">Votre panier est vide</p>
-                    <Button asChild>
-                      <Link to="/">Découvrir les produits</Link>
-                    </Button>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Parcourez nos produits ci-dessous pour commencer vos achats
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -335,12 +335,12 @@ const ClientDashboard = () => {
                     ))}
                     
                     <div className="flex justify-between items-center pt-4 border-t">
-                      <Button variant="outline" asChild>
-                        <Link to="/">Continuer les achats</Link>
-                      </Button>
-                      <Button asChild>
+                      <div className="text-sm text-muted-foreground">
+                        Total: <span className="font-bold text-primary text-lg">{total.toFixed(2)} €</span>
+                      </div>
+                      <Button size="lg" asChild>
                         <Link to="/checkout">
-                          Passer la commande ({total.toFixed(2)} €)
+                          Valider la commande
                         </Link>
                       </Button>
                     </div>
@@ -437,9 +437,9 @@ const ClientDashboard = () => {
                 )}
                 
                 <div className="mt-6 text-center">
-                  <Button asChild>
-                    <Link to="/">Voir tous les produits</Link>
-                  </Button>
+                  <p className="text-sm text-muted-foreground">
+                    {products.length} produit{products.length > 1 ? "s" : ""} affiché{products.length > 1 ? "s" : ""}
+                  </p>
                 </div>
               </CardContent>
             </Card>
