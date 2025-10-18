@@ -1,23 +1,84 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut } from "lucide-react";
+import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut, Edit, Trash2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { AddProductDialog } from "@/components/AddProductDialog";
+import { EditProductDialog } from "@/components/EditProductDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+interface Product {
+  id: string;
+  nom: string;
+  prix: number;
+  stock: number;
+  statut: string;
+  images: string[];
+  created_at: string;
+}
 
 const SellerDashboard = () => {
   const { user, userRole, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || userRole?.role !== "vendeur")) {
       navigate("/auth");
+    } else if (user) {
+      loadProducts();
     }
   }, [user, userRole, loading, navigate]);
+
+  const loadProducts = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from("produits")
+      .select("*")
+      .eq("id_vendeur", user.id)
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setProducts(data);
+    }
+  };
+
+  const handleEdit = (productId: string) => {
+    setSelectedProduct(productId);
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = async (productId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) return;
+
+    const { error } = await supabase
+      .from("produits")
+      .delete()
+      .eq("id", productId);
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le produit",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: "Produit supprimé avec succès",
+      });
+      loadProducts();
+    }
+  };
 
   if (loading) {
     return (
@@ -75,7 +136,7 @@ const SellerDashboard = () => {
               <Package className="h-4 w-4 text-white/80" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{products.length}</div>
               <p className="text-xs text-white/80">Total de produits</p>
             </CardContent>
           </Card>
@@ -114,31 +175,66 @@ const SellerDashboard = () => {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Mes produits</CardTitle>
-              <CardDescription>Gérer votre catalogue</CardDescription>
-            </CardHeader>
-            <CardContent>
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Mes produits</CardTitle>
+            <CardDescription>Gérer votre catalogue</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {products.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 Aucun produit ajouté pour le moment
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Statistiques des ventes</CardTitle>
-              <CardDescription>Évolution sur 30 jours</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                Aucune donnée disponible
+            ) : (
+              <div className="space-y-4">
+                {products.map((product) => (
+                  <div key={product.id} className="flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <img 
+                      src={product.images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"} 
+                      alt={product.nom}
+                      className="w-20 h-20 object-cover rounded-md"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold truncate">{product.nom}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {product.prix.toFixed(2)}€ • Stock: {product.stock}
+                      </p>
+                      <Badge variant={product.statut === "en_ligne" ? "default" : "secondary"} className="mt-1">
+                        {product.statut}
+                      </Badge>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleEdit(product.id)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {selectedProduct && (
+          <EditProductDialog
+            productId={selectedProduct}
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+            onSuccess={loadProducts}
+          />
+        )}
+
       </main>
 
       <Footer />

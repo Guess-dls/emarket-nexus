@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Smartphone, 
   Laptop, 
@@ -14,7 +16,16 @@ import {
   Home as HomeIcon
 } from "lucide-react";
 
+interface Product {
+  id: string;
+  nom: string;
+  prix: number;
+  images: string[];
+  slug: string;
+}
+
 const Index = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const categories = [
     { name: "Électronique", icon: Smartphone, productCount: 1250, slug: "electronique" },
     { name: "Ordinateurs", icon: Laptop, productCount: 830, slug: "ordinateurs" },
@@ -26,49 +37,21 @@ const Index = () => {
     { name: "Maison", icon: HomeIcon, productCount: 1400, slug: "maison" },
   ];
 
-  const featuredProducts = [
-    {
-      id: "1",
-      name: "Smartphone Premium X Pro",
-      price: 899.99,
-      originalPrice: 1099.99,
-      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
-      rating: 4.8,
-      reviews: 234,
-      seller: "TechStore",
-      badge: "Nouveauté",
-    },
-    {
-      id: "2",
-      name: "Montre Connectée Elite",
-      price: 349.99,
-      originalPrice: 449.99,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
-      rating: 4.6,
-      reviews: 189,
-      seller: "GadgetPro",
-    },
-    {
-      id: "3",
-      name: "Écouteurs Sans Fil Premium",
-      price: 199.99,
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
-      rating: 4.9,
-      reviews: 456,
-      seller: "AudioMax",
-      badge: "Best Seller",
-    },
-    {
-      id: "4",
-      name: "Ordinateur Portable Gaming",
-      price: 1499.99,
-      originalPrice: 1799.99,
-      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853",
-      rating: 4.7,
-      reviews: 178,
-      seller: "GamerZone",
-    },
-  ];
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    const { data, error } = await supabase
+      .from("produits")
+      .select("id, nom, prix, images, slug")
+      .eq("statut", "en_ligne")
+      .limit(8);
+
+    if (!error && data) {
+      setProducts(data);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -99,17 +82,32 @@ const Index = () => {
         <section className="py-16">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Produits en vedette</h2>
+              <h2 className="text-3xl font-bold mb-4">Produits disponibles</h2>
               <p className="text-muted-foreground">
-                Les meilleurs produits sélectionnés pour vous
+                Découvrez tous les produits de notre marketplace
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))}
-            </div>
+            {products.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                Aucun produit disponible pour le moment
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {products.map((product) => (
+                  <ProductCard 
+                    key={product.id}
+                    id={product.id}
+                    name={product.nom}
+                    price={product.prix}
+                    image={product.images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"}
+                    rating={4.5}
+                    reviews={0}
+                    seller="Vendeur"
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
