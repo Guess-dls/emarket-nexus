@@ -317,6 +317,54 @@ export type Database = {
         }
         Relationships: []
       }
+      vendeur_commandes: {
+        Row: {
+          created_at: string | null
+          id: string
+          id_commande: string
+          id_produit: string
+          id_vendeur: string
+          prix_unitaire: number
+          quantite: number
+          statut: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          id_commande: string
+          id_produit: string
+          id_vendeur: string
+          prix_unitaire: number
+          quantite: number
+          statut?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          id_commande?: string
+          id_produit?: string
+          id_vendeur?: string
+          prix_unitaire?: number
+          quantite?: number
+          statut?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendeur_commandes_id_commande_fkey"
+            columns: ["id_commande"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendeur_commandes_id_produit_fkey"
+            columns: ["id_produit"]
+            isOneToOne: false
+            referencedRelation: "produits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut, Edit, Trash2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut, Edit, Trash2, Eye } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Badge } from "@/components/ui/badge";
 import { AddProductDialog } from "@/components/AddProductDialog";
 import { EditProductDialog } from "@/components/EditProductDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +21,28 @@ interface Product {
   statut: string;
   images: string[];
   created_at: string;
+  ventes_total: number;
+}
+
+interface VendorOrder {
+  id: string;
+  id_commande: string;
+  quantite: number;
+  prix_unitaire: number;
+  statut: string;
+  created_at: string;
+  produits: {
+    nom: string;
+    images: string[];
+  };
+  commandes: {
+    id: string;
+    adresse_livraison: string;
+    profiles: {
+      nom: string;
+      email: string;
+    };
+  };
 }
 
 const SellerDashboard = () => {
@@ -27,16 +50,30 @@ const SellerDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<VendorOrder[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    totalOrders: 0,
+    totalRevenue: 0,
+    totalSales: 0,
+  });
 
   useEffect(() => {
     if (!loading && (!user || userRole?.role !== "vendeur")) {
       navigate("/auth");
     } else if (user) {
-      loadProducts();
+      loadDashboardData();
     }
   }, [user, userRole, loading, navigate]);
+
+  const loadDashboardData = async () => {
+    await Promise.all([
+      loadProducts(),
+      loadOrders(),
+    ]);
+  };
 
   const loadProducts = async () => {
     if (!user) return;
@@ -49,6 +86,46 @@ const SellerDashboard = () => {
 
     if (!error && data) {
       setProducts(data);
+      const totalSales = data.reduce((sum, p) => sum + (p.ventes_total || 0), 0);
+      setStats(prev => ({ ...prev, totalProducts: data.length, totalSales }));
+    }
+  };
+
+  const loadOrders = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("vendeur_commandes")
+      .select(`
+        id,
+        id_commande,
+        quantite,
+        prix_unitaire,
+        statut,
+        created_at,
+        produits:id_produit (
+          nom,
+          images
+        ),
+        commandes:id_commande (
+          id,
+          adresse_livraison,
+          profiles:id_client (
+            nom,
+            email
+          )
+        )
+      `)
+      .eq("id_vendeur", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (!error && data) {
+      setOrders(data as any);
+      const totalRevenue = data.reduce((sum, order) => 
+        sum + (Number(order.prix_unitaire) * order.quantite), 0
+      );
+      setStats(prev => ({ ...prev, totalOrders: data.length, totalRevenue }));
     }
   };
 
@@ -80,6 +157,51 @@ const SellerDashboard = () => {
     }
   };
 
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    const { error } = await supabase
+      .from("vendeur_commandes")
+      .update({ statut: newStatus })
+      .eq("id", orderId);
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de mettre à jour le statut",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: "Statut mis à jour",
+      });
+      loadOrders();
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
+      en_attente: "secondary",
+      en_cours: "default",
+      expediee: "default",
+      livree: "default",
+      annulee: "destructive",
+    };
+
+    const labels: Record<string, string> = {
+      en_attente: "En attente",
+      en_cours: "En cours",
+      expediee: "Expédiée",
+      livree: "Livrée",
+      annulee: "Annulée",
+    };
+
+    return (
+      <Badge variant={variants[status] || "default"}>
+        {labels[status] || status}
+      </Badge>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -92,134 +214,247 @@ const SellerDashboard = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 py-8 overflow-x-hidden">
+      <main className="flex-1 container py-8">
         <div className="mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-            <div className="w-full md:w-auto">
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 break-words">Tableau de bord Vendeur</h1>
-              <p className="text-muted-foreground">Gérez vos produits et suivez vos ventes</p>
+            <div>
+              <h1 className="text-4xl font-bold mb-2">Tableau de bord Vendeur</h1>
+              <p className="text-muted-foreground">
+                Gérez vos produits et suivez vos ventes
+              </p>
             </div>
-            <div className="flex gap-2 w-full md:w-auto flex-wrap">
+            <div className="flex gap-2">
+              <AddProductDialog />
               <Button variant="outline" onClick={signOut}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Déconnexion
               </Button>
             </div>
           </div>
-
-          {/* Bouton principal Vendre */}
-          <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center gap-4">
-                <Package className="h-12 w-12 text-primary" />
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">Commencez à vendre</h2>
-                  <p className="text-muted-foreground mb-4">
-                    Ajoutez votre premier produit et commencez votre activité
-                  </p>
-                </div>
-                <AddProductDialog />
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white hover:shadow-xl transition-all hover:scale-105">
+          <Card className="border-0 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">Produits</CardTitle>
-              <Package className="h-4 w-4 text-white/80" />
+              <CardTitle className="text-sm font-medium">Produits</CardTitle>
+              <Package className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{products.length}</div>
-              <p className="text-xs text-white/80">Total de produits</p>
+              <div className="text-2xl font-bold">{stats.totalProducts}</div>
+              <p className="text-xs text-white/80">{stats.totalSales} ventes</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-teal-500 to-teal-600 text-white hover:shadow-xl transition-all hover:scale-105">
+          <Card className="border-0 bg-gradient-to-br from-teal-500 to-teal-600 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">Ventes</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-white/80" />
+              <CardTitle className="text-sm font-medium">Commandes</CardTitle>
+              <ShoppingCart className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{stats.totalOrders}</div>
               <p className="text-xs text-white/80">Commandes reçues</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-amber-500 to-amber-600 text-white hover:shadow-xl transition-all hover:scale-105">
+          <Card className="border-0 bg-gradient-to-br from-amber-500 to-amber-600 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">Revenus</CardTitle>
-              <DollarSign className="h-4 w-4 text-white/80" />
+              <CardTitle className="text-sm font-medium">Revenus</CardTitle>
+              <DollarSign className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0 €</div>
+              <div className="text-2xl font-bold">{stats.totalRevenue.toFixed(2)} €</div>
               <p className="text-xs text-white/80">Total des revenus</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-pink-500 to-pink-600 text-white hover:shadow-xl transition-all hover:scale-105">
+          <Card className="border-0 bg-gradient-to-br from-pink-500 to-pink-600 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">Tendance</CardTitle>
-              <TrendingUp className="h-4 w-4 text-white/80" />
+              <CardTitle className="text-sm font-medium">Tendance</CardTitle>
+              <TrendingUp className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0%</div>
-              <p className="text-xs text-white/80">Ce mois-ci</p>
+              <div className="text-2xl font-bold">
+                {stats.totalOrders > 0 ? "↗" : "→"}
+              </div>
+              <p className="text-xs text-white/80">Performance</p>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Mes produits</CardTitle>
-            <CardDescription>Gérer votre catalogue</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {products.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                Aucun produit ajouté pour le moment
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {products.map((product) => (
-                  <div key={product.id} className="flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <img 
-                      src={product.images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"} 
-                      alt={product.nom}
-                      className="w-20 h-20 object-cover rounded-md"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold truncate">{product.nom}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {product.prix.toFixed(2)}€ • Stock: {product.stock}
-                      </p>
-                      <Badge variant={product.statut === "en_ligne" ? "default" : "secondary"} className="mt-1">
-                        {product.statut}
-                      </Badge>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => handleEdit(product.id)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => handleDelete(product.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
+        {/* Tabs */}
+        <Tabs defaultValue="products" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="products">
+              <Package className="h-4 w-4 mr-2" />
+              Mes Produits
+            </TabsTrigger>
+            <TabsTrigger value="orders">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Commandes
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Products Tab */}
+          <TabsContent value="products">
+            <Card>
+              <CardHeader>
+                <CardTitle>Mes produits</CardTitle>
+                <CardDescription>Gérer votre catalogue</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {products.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+                    <p className="text-muted-foreground mb-4">
+                      Aucun produit pour le moment
+                    </p>
+                    <AddProductDialog />
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                ) : (
+                  <div className="space-y-4">
+                    {products.map((product) => (
+                      <div key={product.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                        <img 
+                          src={product.images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"} 
+                          alt={product.nom}
+                          className="w-20 h-20 object-cover rounded-md"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold truncate">{product.nom}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {product.prix.toFixed(2)}€ • Stock: {product.stock} • Ventes: {product.ventes_total || 0}
+                          </p>
+                          {getStatusBadge(product.statut)}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleEdit(product.id)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleDelete(product.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Orders Tab */}
+          <TabsContent value="orders">
+            <Card>
+              <CardHeader>
+                <CardTitle>Mes commandes</CardTitle>
+                <CardDescription>Gérer les commandes de vos produits</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {orders.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    Aucune commande pour le moment
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {orders.map((order) => (
+                      <div
+                        key={order.id}
+                        className="p-4 rounded-lg border space-y-3"
+                      >
+                        <div className="flex gap-4">
+                          <img
+                            src={order.produits?.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"}
+                            alt={order.produits?.nom}
+                            className="w-16 h-16 object-cover rounded-md"
+                          />
+                          
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h3 className="font-semibold">{order.produits?.nom}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  Commande #{order.id_commande.slice(0, 8)}
+                                </p>
+                              </div>
+                              {getStatusBadge(order.statut)}
+                            </div>
+
+                            <div className="text-sm space-y-1">
+                              <p>
+                                <span className="text-muted-foreground">Client:</span>{" "}
+                                {order.commandes?.profiles?.nom || order.commandes?.profiles?.email}
+                              </p>
+                              <p>
+                                <span className="text-muted-foreground">Quantité:</span>{" "}
+                                {order.quantite}
+                              </p>
+                              <p className="font-bold text-primary">
+                                Total: {(Number(order.prix_unitaire) * order.quantite).toFixed(2)} €
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(order.created_at).toLocaleDateString("fr-FR", {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 pt-2 border-t">
+                          {order.statut === "en_attente" && (
+                            <Button
+                              size="sm"
+                              onClick={() => updateOrderStatus(order.id, "en_cours")}
+                            >
+                              Accepter
+                            </Button>
+                          )}
+                          {order.statut === "en_cours" && (
+                            <Button
+                              size="sm"
+                              onClick={() => updateOrderStatus(order.id, "expediee")}
+                            >
+                              Marquer comme expédiée
+                            </Button>
+                          )}
+                          {order.statut === "expediee" && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateOrderStatus(order.id, "livree")}
+                            >
+                              Marquer comme livrée
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Détails
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {selectedProduct && (
           <EditProductDialog
@@ -229,7 +464,6 @@ const SellerDashboard = () => {
             onSuccess={loadProducts}
           />
         )}
-
       </main>
 
       <Footer />

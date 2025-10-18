@@ -47,9 +47,14 @@ interface Order {
   statut: string;
   created_at: string;
   adresse_livraison: string;
+  methode_paiement: string;
   commande_items: {
     quantite: number;
     prix_unitaire: number;
+    produits: {
+      nom: string;
+      images: string[];
+    };
   }[];
 }
 
@@ -115,9 +120,14 @@ const ClientDashboard = () => {
         statut,
         created_at,
         adresse_livraison,
+        methode_paiement,
         commande_items (
           quantite,
-          prix_unitaire
+          prix_unitaire,
+          produits:id_produit (
+            nom,
+            images
+          )
         )
       `)
       .eq("id_client", user.id)
@@ -125,7 +135,7 @@ const ClientDashboard = () => {
       .limit(10);
 
     if (data) {
-      setOrders(data as Order[]);
+      setOrders(data as any);
       setStats({
         totalOrders: data.length,
         totalSpent: data.reduce((sum, order) => sum + Number(order.total), 0),
@@ -367,7 +377,7 @@ const ClientDashboard = () => {
                     {orders.map((order) => (
                       <div
                         key={order.id}
-                        className="p-4 rounded-lg border space-y-2"
+                        className="p-4 rounded-lg border space-y-3"
                       >
                         <div className="flex justify-between items-start">
                           <div>
@@ -379,24 +389,50 @@ const ClientDashboard = () => {
                                 day: "numeric",
                                 month: "long",
                                 year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
                               })}
                             </p>
                           </div>
                           {getStatusBadge(order.statut)}
                         </div>
+
+                        {/* Order Items */}
+                        <div className="space-y-2">
+                          {order.commande_items?.slice(0, 3).map((item, idx) => (
+                            <div key={idx} className="flex gap-3 items-center text-sm">
+                              <img
+                                src={item.produits?.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"}
+                                alt={item.produits?.nom}
+                                className="w-12 h-12 object-cover rounded"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium truncate">{item.produits?.nom}</p>
+                                <p className="text-muted-foreground">
+                                  Qté: {item.quantite} × {Number(item.prix_unitaire).toFixed(2)} €
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                          {order.commande_items && order.commande_items.length > 3 && (
+                            <p className="text-sm text-muted-foreground">
+                              +{order.commande_items.length - 3} autre(s) article(s)
+                            </p>
+                          )}
+                        </div>
                         
                         <div className="flex justify-between items-center pt-2 border-t">
-                          <div>
+                          <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">
                               {order.commande_items?.length || 0} article(s)
                             </p>
-                            <p className="font-bold text-primary">
+                            <p className="font-bold text-primary text-lg">
                               {Number(order.total).toFixed(2)} €
                             </p>
                           </div>
                           <Button variant="outline" size="sm">
                             <Eye className="h-4 w-4 mr-2" />
-                            Détails
+                            Voir détails
                           </Button>
                         </div>
                       </div>

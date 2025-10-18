@@ -19,7 +19,6 @@ interface CheckoutForm {
   telephone: string;
   adresse: string;
   ville: string;
-  codePostal: string;
   methodePaiement: string;
 }
 
@@ -46,10 +45,11 @@ const Checkout = () => {
           description: "Vous devez être connecté",
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
-      const adresseComplete = `${data.adresse}, ${data.codePostal} ${data.ville}`;
+      const adresseComplete = `${data.adresse}, ${data.ville}`;
 
       // Create order
       const { data: commande, error: commandeError } = await supabase
@@ -66,34 +66,69 @@ const Checkout = () => {
 
       if (commandeError) throw commandeError;
 
-      // Create order items
-      const orderItems = items.map(item => ({
-        id_commande: commande.id,
-        id_produit: item.id_produit,
-        quantite: item.quantite,
-        prix_unitaire: item.produit?.prix || 0,
-      }));
+      // Create order items and vendor orders
+      const orderItems = [];
+      const vendorOrders = [];
+      
+      for (const item of items) {
+        // Add to order items
+        orderItems.push({
+          id_commande: commande.id,
+          id_produit: item.id_produit,
+          quantite: item.quantite,
+          prix_unitaire: item.produit?.prix || 0,
+        });
 
+        // Get product vendor ID
+        const { data: product } = await supabase
+          .from("produits")
+          .select("id_vendeur")
+          .eq("id", item.id_produit)
+          .single();
+
+        if (product) {
+          vendorOrders.push({
+            id_vendeur: product.id_vendeur,
+            id_commande: commande.id,
+            id_produit: item.id_produit,
+            quantite: item.quantite,
+            prix_unitaire: item.produit?.prix || 0,
+            statut: "en_attente",
+          });
+        }
+      }
+
+      // Insert order items
       const { error: itemsError } = await supabase
         .from("commande_items")
         .insert(orderItems);
 
       if (itemsError) throw itemsError;
 
-      // Update product stock
+      // Insert vendor orders
+      const { error: vendorError } = await supabase
+        .from("vendeur_commandes")
+        .insert(vendorOrders);
+
+      if (vendorError) throw vendorError;
+
+      // Update product stock and sales
       for (const item of items) {
-        const newStock = (item.produit?.stock || 0) - item.quantite;
-        await supabase
+        const { data: currentProduct } = await supabase
           .from("produits")
-          .update({ 
-            stock: newStock,
-            ventes_total: (await supabase
-              .from("produits")
-              .select("ventes_total")
-              .eq("id", item.id_produit)
-              .single()).data?.ventes_total + item.quantite || item.quantite
-          })
-          .eq("id", item.id_produit);
+          .select("stock, ventes_total")
+          .eq("id", item.id_produit)
+          .single();
+
+        if (currentProduct) {
+          await supabase
+            .from("produits")
+            .update({ 
+              stock: currentProduct.stock - item.quantite,
+              ventes_total: (currentProduct.ventes_total || 0) + item.quantite
+            })
+            .eq("id", item.id_produit);
+        }
       }
 
       await clearCart();
@@ -172,23 +207,13 @@ const Checkout = () => {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="ville">Ville *</Label>
-                    <Input
-                      id="ville"
-                      {...register("ville", { required: "Ville requise" })}
-                      className={errors.ville ? "border-destructive" : ""}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="codePostal">Code postal *</Label>
-                    <Input
-                      id="codePostal"
-                      {...register("codePostal", { required: "Code postal requis" })}
-                      className={errors.codePostal ? "border-destructive" : ""}
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="ville">Ville *</Label>
+                  <Input
+                    id="ville"
+                    {...register("ville", { required: "Ville requise" })}
+                    className={errors.ville ? "border-destructive" : ""}
+                  />
                 </div>
               </div>
 
