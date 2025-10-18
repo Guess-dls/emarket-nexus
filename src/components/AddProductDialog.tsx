@@ -126,31 +126,72 @@ export const AddProductDialog = () => {
         imageUrls.push(publicUrl);
       }
 
-      // Generate slug from nom
-      const slug = values.nom
+
+      // Insert with unique slug handling and RLS fallback
+      const baseInsert = {
+        nom: values.nom,
+        description: values.description,
+        prix: Number(values.prix),
+        stock: Number(values.stock),
+        id_categorie: values.id_categorie,
+        id_vendeur: user.id,
+        images: imageUrls,
+      } as const;
+
+      const baseSlug = values.nom
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "");
 
-      const { error } = await supabase.from("produits").insert({
-        nom: values.nom,
-        slug,
-        description: values.description,
-        prix: Number(values.prix),
-        stock: Number(values.stock),
-        id_categorie: values.id_categorie,
-        id_vendeur: user.id,
-        statut: "en_ligne",
-        images: imageUrls,
-      });
+      const insertWithStatus = async (status: "en_ligne" | "brouillon") => {
+        let attempt = 0;
+        let lastError: any = null;
+        let candidate = baseSlug;
+        while (attempt < 5) {
+          const { error } = await supabase.from("produits").insert({
+            ...baseInsert,
+            slug: candidate,
+            statut: status,
+          });
+          if (!error) return { ok: true as const, slug: candidate };
 
-      if (error) throw error;
+          const msg = (error as any)?.message?.toString() || "";
+          if (/duplicate key value|slug_key/i.test(msg)) {
+            // slug collision, try a new suffix
+            candidate = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`;
+            attempt += 1;
+            lastError = error;
+            continue;
+          }
+          return { ok: false as const, error };
+        }
+        return { ok: false as const, error: lastError };
+      };
+
+      // Try publish first
+      let published = true;
+      let result = await insertWithStatus("en_ligne");
+
+      if (!result.ok) {
+        const msg = (result as any)?.error?.message?.toString() || "";
+        const isRls = /row level security|policy|RLS|permission/i.test(msg);
+        if (isRls) {
+          published = false;
+          result = await insertWithStatus("brouillon");
+        }
+      }
+
+      if (!result.ok) throw (result as any).error;
+
+
 
       toast({
         title: "Succès",
-        description: "Produit créé avec succès",
+        description: published
+          ? "Produit publié en ligne"
+          : "Produit créé en brouillon. Publiez-le depuis votre tableau de bord.",
       });
 
       form.reset();
