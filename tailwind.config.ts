@@ -59,13 +59,15 @@ export default {
         },
       },
       backgroundImage: {
-        'gradient-luxury': 'linear-gradient(135deg, hsl(45, 65%, 52%) 0%, hsl(45, 85%, 65%) 100%)',
-        'gradient-dark': 'linear-gradient(135deg, hsl(0, 0%, 15%) 0%, hsl(0, 0%, 25%) 100%)',
-        'gradient-hero': 'linear-gradient(135deg, hsl(0, 0%, 10%) 0%, hsl(45, 65%, 52%) 100%)',
+        'gradient-primary': 'linear-gradient(135deg, hsl(220, 90%, 56%) 0%, hsl(270, 70%, 60%) 100%)',
+        'gradient-accent': 'linear-gradient(135deg, hsl(25, 95%, 58%) 0%, hsl(340, 85%, 60%) 100%)',
+        'gradient-hero': 'linear-gradient(135deg, hsl(220, 90%, 56%) 0%, hsl(270, 70%, 60%) 100%)',
+        'gradient-card': 'linear-gradient(135deg, hsl(0, 0%, 100%) 0%, hsl(240, 20%, 99%) 100%)',
       },
       boxShadow: {
-        'elegant': '0 4px 20px hsl(0 0% 0% / 0.1)',
-        'gold': '0 10px 30px -10px hsl(45 65% 52% / 0.3)',
+        'elegant': '0 8px 30px hsl(220 90% 56% / 0.15)',
+        'primary': '0 10px 40px -10px hsl(220 90% 56% / 0.4)',
+        'glow': '0 0 60px hsl(220 100% 70% / 0.3)',
       },
       borderRadius: {
         lg: "var(--radius)",

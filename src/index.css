@@ -8,89 +8,92 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Luxury Gold E-Commerce Theme */
-    --background: 210 40% 96%;
-    --foreground: 0 0% 10%;
+    /* Vibrant E-Commerce Theme - Plus éclatant et dynamique */
+    --background: 240 20% 98%;
+    --foreground: 240 10% 5%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 240 10% 5%;
     
-    /* Dashboard Card Colors */
+    /* Dashboard Card Colors - Couleurs vives et éclatantes */
     --card-blue: 217 91% 60%;
     --card-green: 142 76% 36%;
     --card-purple: 262 83% 58%;
     --card-orange: 25 95% 53%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 240 10% 5%;
 
-    /* Luxurious Gold Primary */
-    --primary: 45 65% 52%;
+    /* Primary Vibrant - Bleu électrique dynamique */
+    --primary: 220 90% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 45 85% 65%;
+    --primary-glow: 220 100% 70%;
 
-    /* Premium Black Secondary */
-    --secondary: 0 0% 15%;
+    /* Secondary Energique - Violet éclatant */
+    --secondary: 270 70% 60%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Muted Grays */
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    /* Muted - Plus contrasté et lisible */
+    --muted: 240 15% 92%;
+    --muted-foreground: 240 8% 35%;
 
-    /* Accent Gold */
-    --accent: 45 65% 52%;
+    /* Accent - Orange vif pour attirer l'attention */
+    --accent: 25 95% 58%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 45 65% 52%;
+    --border: 240 10% 85%;
+    --input: 240 10% 85%;
+    --ring: 220 90% 56%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    /* Luxury Gradients */
-    --gradient-gold: linear-gradient(135deg, hsl(45, 65%, 52%) 0%, hsl(45, 85%, 65%) 100%);
-    --gradient-dark: linear-gradient(135deg, hsl(0, 0%, 15%) 0%, hsl(0, 0%, 25%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(0, 0%, 10%) 0%, hsl(45, 65%, 52%) 100%);
+    /* Gradients Dynamiques */
+    --gradient-primary: linear-gradient(135deg, hsl(220, 90%, 56%) 0%, hsl(270, 70%, 60%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(25, 95%, 58%) 0%, hsl(340, 85%, 60%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(220, 90%, 56%) 0%, hsl(270, 70%, 60%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%) 0%, hsl(240, 20%, 99%) 100%);
 
-    /* Shadows */
-    --shadow-gold: 0 10px 30px -10px hsl(45 65% 52% / 0.3);
-    --shadow-elevation: 0 4px 20px hsl(0 0% 0% / 0.1);
+    /* Shadows Vibrantes */
+    --shadow-primary: 0 10px 40px -10px hsl(220 90% 56% / 0.4);
+    --shadow-elevation: 0 8px 30px hsl(220 90% 56% / 0.15);
+    --shadow-glow: 0 0 60px hsl(220 100% 70% / 0.3);
 
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 95%;
+    --background: 240 10% 8%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 15%;
-    --card-foreground: 0 0% 95%;
+    --card: 240 8% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 240 8% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 45 65% 52%;
-    --primary-foreground: 0 0% 10%;
+    --primary: 220 90% 56%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 270 70% 60%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 240 8% 18%;
+    --muted-foreground: 240 5% 70%;
 
-    --accent: 45 65% 52%;
-    --accent-foreground: 0 0% 10%;
+    --accent: 25 95% 58%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 25%;
-    --input: 0 0% 25%;
-    --ring: 45 65% 52%;
+    --border: 240 8% 22%;
+    --input: 240 8% 22%;
+    --ring: 220 90% 56%;
   }
 }
 
