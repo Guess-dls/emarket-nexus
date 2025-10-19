@@ -22,6 +22,7 @@ import {
   Minus,
   Eye
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -257,10 +258,68 @@ const ClientDashboard = () => {
 
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderDetailOpen, setOrderDetailOpen] = useState(false);
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
+
+  const toggleOrderSelection = (orderId: string) => {
+    setSelectedOrderIds(prev => 
+      prev.includes(orderId) 
+        ? prev.filter(id => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const deleteSelectedOrders = async () => {
+    if (selectedOrderIds.length === 0) {
+      toast({
+        title: "Aucune sélection",
+        description: "Veuillez sélectionner des commandes à supprimer",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${selectedOrderIds.length} commande(s) ?`)) return;
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const orderId of selectedOrderIds) {
+      const { error } = await supabase
+        .from("commandes")
+        .delete()
+        .eq("id", orderId)
+        .eq("id_client", user!.id);
+
+      if (error) {
+        errorCount++;
+      } else {
+        successCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      toast({
+        title: "Succès",
+        description: `${successCount} commande(s) supprimée(s) avec succès`,
+      });
+    }
+
+    if (errorCount > 0) {
+      toast({
+        title: "Erreur partielle",
+        description: `${errorCount} commande(s) n'ont pas pu être supprimées`,
+        variant: "destructive",
+      });
+    }
+
+    setSelectedOrderIds([]);
+    loadOrders();
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive"> = {
       en_attente: "secondary",
+      confirmee: "default",
       en_cours: "default",
       expediee: "default",
       livree: "default",
@@ -269,6 +328,7 @@ const ClientDashboard = () => {
 
     const labels: Record<string, string> = {
       en_attente: "En attente",
+      confirmee: "Confirmée",
       en_cours: "En cours",
       expediee: "Expédiée",
       livree: "Livrée",
@@ -479,9 +539,20 @@ const ClientDashboard = () => {
           {/* Orders Tab */}
           <TabsContent value="orders">
             <Card>
-              <CardHeader>
-                <CardTitle>Mes commandes</CardTitle>
-                <CardDescription>Historique de vos commandes</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Mes commandes</CardTitle>
+                  <CardDescription>Historique de vos commandes</CardDescription>
+                </div>
+                {selectedOrderIds.length > 0 && (
+                  <Button 
+                    variant="destructive" 
+                    onClick={deleteSelectedOrders}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Supprimer ({selectedOrderIds.length})
+                  </Button>
+                )}
               </CardHeader>
               <CardContent>
                 {orders.length === 0 ? (
@@ -490,12 +561,21 @@ const ClientDashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {orders.map((order) => (
-                      <div
-                        key={order.id}
-                        className="p-4 rounded-lg border space-y-3"
-                      >
-                        <div className="flex justify-between items-start">
+                    {orders.map((order) => {
+                      const canBeDeleted = order.statut === "annulee" || order.statut === "livree";
+                      return (
+                        <div
+                          key={order.id}
+                          className="p-4 rounded-lg border space-y-3"
+                        >
+                          <div className="flex justify-between items-start gap-3">
+                            {canBeDeleted && (
+                              <Checkbox
+                                checked={selectedOrderIds.includes(order.id)}
+                                onCheckedChange={() => toggleOrderSelection(order.id)}
+                                className="mt-1"
+                              />
+                            )}
                           <div>
                             <p className="font-semibold">
                               Commande #{order.id.slice(0, 8)}
@@ -576,9 +656,10 @@ const ClientDashboard = () => {
                               Détails
                             </Button>
                           </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
