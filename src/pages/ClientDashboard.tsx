@@ -379,7 +379,7 @@ const ClientDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-blue))` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Commandes</CardTitle>
               <Package className="h-4 w-4" />
@@ -390,7 +390,7 @@ const ClientDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-green-500 to-green-600 text-white">
+          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-green))` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Dépenses</CardTitle>
               <ShoppingBag className="h-4 w-4" />
@@ -401,7 +401,7 @@ const ClientDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-purple))` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Panier</CardTitle>
               <ShoppingCart className="h-4 w-4" />
@@ -412,7 +412,7 @@ const ClientDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-orange))` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Profil</CardTitle>
               <User className="h-4 w-4" />

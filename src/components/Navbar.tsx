@@ -1,11 +1,25 @@
-import { ShoppingCart, Search, User, Menu, Heart } from "lucide-react";
+import { ShoppingCart, Search, User, Menu, Heart, LogOut, Package, Grid3x3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/hooks/useAuth";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
 const Navbar = () => {
   const { itemCount } = useCart();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background shadow-sm">
@@ -47,15 +61,89 @@ const Navbar = () => {
             </Link>
           </Button>
 
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/auth">
-              <User className="h-5 w-5" />
-            </Link>
-          </Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/client-dashboard")}>
+                  <Package className="mr-2 h-4 w-4" />
+                  Tableau de bord
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/cart")}>
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Mon panier
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Déconnexion
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button variant="ghost" size="icon" asChild>
+              <Link to="/auth">
+                <User className="h-5 w-5" />
+              </Link>
+            </Button>
+          )}
 
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
-          </Button>
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-64">
+              <nav className="flex flex-col gap-4 mt-8">
+                <Link 
+                  to="/cart" 
+                  className="flex items-center gap-2 text-lg hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  Panier ({itemCount})
+                </Link>
+                {user ? (
+                  <>
+                    <Link 
+                      to="/client-dashboard" 
+                      className="flex items-center gap-2 text-lg hover:text-primary transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Package className="h-5 w-5" />
+                      Tableau de bord
+                    </Link>
+                    <button 
+                      onClick={() => {
+                        signOut();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 text-lg hover:text-primary transition-colors text-left"
+                    >
+                      <LogOut className="h-5 w-5" />
+                      Déconnexion
+                    </button>
+                  </>
+                ) : (
+                  <Link 
+                    to="/auth" 
+                    className="flex items-center gap-2 text-lg hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5" />
+                    Connexion
+                  </Link>
+                )}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
