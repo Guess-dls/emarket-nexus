@@ -107,7 +107,7 @@ const AdminDashboard = () => {
         email,
         telephone,
         created_at,
-        user_roles!inner (
+        user_roles (
           role,
           statut
         )
@@ -116,19 +116,26 @@ const AdminDashboard = () => {
 
     if (error) {
       console.error("Error loading users:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les utilisateurs",
+        variant: "destructive",
+      });
       return;
     }
 
     if (data) {
-      const formattedUsers = data.map((u: any) => ({
-        id: u.id,
-        nom: u.nom,
-        email: u.email,
-        telephone: u.telephone,
-        created_at: u.created_at,
-        role: u.user_roles[0]?.role || "client",
-        statut: u.user_roles[0]?.statut || "actif",
-      }));
+      const formattedUsers = data
+        .filter((u: any) => u.user_roles && u.user_roles.length > 0)
+        .map((u: any) => ({
+          id: u.id,
+          nom: u.nom,
+          email: u.email,
+          telephone: u.telephone,
+          created_at: u.created_at,
+          role: u.user_roles[0]?.role || "client",
+          statut: u.user_roles[0]?.statut || "actif",
+        }));
       setUsers(formattedUsers);
       setStats((prev) => ({ ...prev, totalUsers: formattedUsers.length }));
     }
@@ -145,7 +152,8 @@ const AdminDashboard = () => {
         statut,
         ventes_total,
         created_at,
-        profiles!produits_id_vendeur_fkey (
+        id_vendeur,
+        profiles:id_vendeur (
           nom
         )
       `)
@@ -153,6 +161,11 @@ const AdminDashboard = () => {
 
     if (error) {
       console.error("Error loading products:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les produits",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -163,7 +176,7 @@ const AdminDashboard = () => {
         prix: p.prix,
         stock: p.stock,
         statut: p.statut,
-        ventes_total: p.ventes_total,
+        ventes_total: p.ventes_total || 0,
         created_at: p.created_at,
         vendeur_nom: p.profiles?.nom || "Inconnu",
       }));
@@ -180,7 +193,8 @@ const AdminDashboard = () => {
         total,
         statut,
         created_at,
-        profiles!commandes_id_client_fkey (
+        id_client,
+        profiles:id_client (
           nom,
           email
         )
@@ -189,6 +203,11 @@ const AdminDashboard = () => {
 
     if (error) {
       console.error("Error loading orders:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les commandes",
+        variant: "destructive",
+      });
       return;
     }
 
