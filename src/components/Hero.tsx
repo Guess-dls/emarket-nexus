@@ -16,7 +16,7 @@ const Hero = () => {
             
             <h1 className="text-4xl md:text-6xl font-bold leading-tight">
               Découvrez des{" "}
-            <span className="text-[var(--accent)] font-semibold">
+            <span className="text-accent font-semibold">
               produits exceptionnels
             </span>
 
