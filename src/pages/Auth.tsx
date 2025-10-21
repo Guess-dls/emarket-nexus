@@ -196,7 +196,7 @@ const Auth = () => {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-primary hover:opacity-90"
+                  className="w-full bg-primary "
                   disabled={isLoading}
                 >
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
