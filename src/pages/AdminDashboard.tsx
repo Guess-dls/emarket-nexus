@@ -378,7 +378,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-blue))` }}>
+          <Card className="border-0 text-white" style={{ background: `hsl(var(--primary))` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-white">Utilisateurs</CardTitle>
               <Users className="h-4 w-4 text-white/80" />
@@ -389,7 +389,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-green))` }}>
+          <Card className="border-0 text-white" style={{ background: `hsl(var(--primary))` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-white">Produits</CardTitle>
               <Package className="h-4 w-4 text-white/80" />
@@ -400,7 +400,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-purple))` }}>
+          <Card className="border-0 text-white" style={{ background: `hsl(var(--primary))` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-white">Commandes</CardTitle>
               <ShoppingCart className="h-4 w-4 text-white/80" />
@@ -411,7 +411,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-orange))` }}>
+          <Card className="border-0 text-white" style={{ background: `hsl(var(--primary))` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-white">Revenus</CardTitle>
               <TrendingUp className="h-4 w-4 text-white/80" />
