@@ -11,19 +11,20 @@ const Hero = () => {
           <div className="space-y-8 animate-fade-in">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
               <TrendingUp className="h-4 w-4" />
-              Marketplace #1 en France
+              Meilleur Marketplace  en Côte D'Ivoire
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold leading-tight">
               Découvrez des{" "}
-              <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                produits exceptionnels
-              </span>
+            <span className="text-[var(--accent)] font-semibold">
+              produits exceptionnels
+            </span>
+
             </h1>
             
             <p className="text-lg text-muted-foreground max-w-lg">
               Des milliers de produits de qualité, vendus par des vendeurs vérifiés. 
-              Achetez en toute confiance avec eMarket.
+              Achetez en toute confiance avec Dmarket.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
