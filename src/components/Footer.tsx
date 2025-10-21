@@ -30,6 +30,9 @@ const Footer = () => {
               <a href="#" className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
                 <Mail className="h-4 w-4" />
               </a>
+               <a href="#" className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+                <whatsapp className="h-4 w-4" />
+              </a>
             </div>
           </div>
 
