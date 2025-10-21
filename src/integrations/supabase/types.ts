@@ -41,6 +41,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "avis_id_client_fkey"
+            columns: ["id_client"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "avis_id_produit_fkey"
             columns: ["id_produit"]
             isOneToOne: false
@@ -146,7 +153,15 @@ export type Database = {
           statut?: string | null
           total?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "commandes_id_client_fkey"
+            columns: ["id_client"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -173,7 +188,15 @@ export type Database = {
           message?: string
           type?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_id_utilisateur_fkey"
+            columns: ["id_utilisateur"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       panier: {
         Row: {
@@ -203,6 +226,13 @@ export type Database = {
             columns: ["id_produit"]
             isOneToOne: false
             referencedRelation: "produits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "panier_id_utilisateur_fkey"
+            columns: ["id_utilisateur"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -261,6 +291,13 @@ export type Database = {
             referencedRelation: "categories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "produits_id_vendeur_fkey"
+            columns: ["id_vendeur"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -315,7 +352,15 @@ export type Database = {
           statut?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vendeur_commandes: {
         Row: {
@@ -361,6 +406,13 @@ export type Database = {
             columns: ["id_produit"]
             isOneToOne: false
             referencedRelation: "produits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendeur_commandes_id_vendeur_fkey"
+            columns: ["id_vendeur"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
