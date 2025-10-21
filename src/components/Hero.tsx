@@ -14,7 +14,7 @@ const Hero = () => {
               Meilleur Marketplace  en Côte D'Ivoire
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold leading-tight text-primary">
               Découvrez des{" "}
             <span className="text-accent font-semibold">
               produits exceptionnels
