@@ -107,7 +107,7 @@ const AdminDashboard = () => {
         email,
         telephone,
         created_at,
-        user_roles (
+        user_roles!user_roles_user_id_fkey (
           role,
           statut
         )
@@ -152,8 +152,7 @@ const AdminDashboard = () => {
         statut,
         ventes_total,
         created_at,
-        id_vendeur,
-        profiles:id_vendeur (
+        profiles!produits_id_vendeur_fkey (
           nom
         )
       `)
@@ -193,8 +192,7 @@ const AdminDashboard = () => {
         total,
         statut,
         created_at,
-        id_client,
-        profiles:id_client (
+        profiles!commandes_id_client_fkey (
           nom,
           email
         )
