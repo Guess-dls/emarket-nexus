@@ -363,7 +363,6 @@ const AdminDashboard = () => {
         <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-bold mb-2">Admin</h1>
-            <p className="text-muted-foreground">Gérez la plateforme</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline">
