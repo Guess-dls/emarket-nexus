@@ -37,12 +37,32 @@ const ProductDetail = () => {
   }, [id]);
 
   const loadProduct = async () => {
-    const { data, error } = await supabase
+    // Check if user is admin
+    const { data: { user } } = await supabase.auth.getUser();
+    let isAdmin = false;
+    
+    if (user) {
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      
+      isAdmin = !!roleData;
+    }
+
+    // Build query - admins can see all products, others only see "en_ligne"
+    let query = supabase
       .from("produits")
       .select("*")
-      .eq("id", id)
-      .eq("statut", "en_ligne")
-      .single();
+      .eq("id", id);
+    
+    if (!isAdmin) {
+      query = query.eq("statut", "en_ligne");
+    }
+
+    const { data, error } = await query.single();
 
     if (error || !data) {
       toast({
