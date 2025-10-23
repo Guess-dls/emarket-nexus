@@ -4,7 +4,9 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 import { 
   Smartphone, 
   Laptop, 
@@ -158,9 +160,15 @@ const Index = () => {
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
               Rejoignez des milliers de vendeurs qui font confiance à eMarket pour développer leur activité en ligne.
             </p>
-            <button className="px-8 py-3 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity">
-              Commencer à vendre
-            </button>
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity"
+              asChild
+            >
+              <Link to="/auth">
+                Commencer à vendre
+              </Link>
+            </Button>
           </div>
         </section>
       </main>
