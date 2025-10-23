@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,18 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ShoppingBag } from "lucide-react";
+
+const loginSchema = z.object({
+  email: z.string().trim().email({ message: "Adresse email invalide" }).max(255, { message: "Email trop long" }),
+  password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }).max(128, { message: "Mot de passe trop long" })
+});
+
+const signupSchema = z.object({
+  nom: z.string().trim().min(2, { message: "Le nom doit contenir au moins 2 caractères" }).max(100, { message: "Nom trop long" }),
+  email: z.string().trim().email({ message: "Adresse email invalide" }).max(255, { message: "Email trop long" }),
+  password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }).max(128, { message: "Mot de passe trop long" }),
+  role: z.enum(["client", "vendeur"], { message: "Type de compte invalide" })
+});
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -47,19 +60,36 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { error } = await signUp(signupEmail, signupPassword, signupNom, signupRole);
+    try {
+      const validatedData = signupSchema.parse({
+        nom: signupNom,
+        email: signupEmail,
+        password: signupPassword,
+        role: signupRole
+      });
 
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur d'inscription",
-        description: error.message,
-      });
-    } else {
-      toast({
-        title: "Inscription réussie !",
-        description: "Vérifiez votre email pour confirmer votre compte.",
-      });
+      const { error } = await signUp(validatedData.email, validatedData.password, validatedData.nom, validatedData.role);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erreur d'inscription",
+          description: error.message,
+        });
+      } else {
+        toast({
+          title: "Inscription réussie !",
+          description: "Vérifiez votre email pour confirmer votre compte.",
+        });
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          variant: "destructive",
+          title: "Erreur de validation",
+          description: error.errors[0].message,
+        });
+      }
     }
 
     setIsLoading(false);
@@ -69,19 +99,34 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { error } = await signIn(loginEmail, loginPassword);
+    try {
+      const validatedData = loginSchema.parse({
+        email: loginEmail,
+        password: loginPassword
+      });
 
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur de connexion",
-        description: error.message,
-      });
-    } else {
-      toast({
-        title: "Connexion réussie !",
-        description: "Bienvenue sur eMarket.",
-      });
+      const { error } = await signIn(validatedData.email, validatedData.password);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erreur de connexion",
+          description: error.message,
+        });
+      } else {
+        toast({
+          title: "Connexion réussie !",
+          description: "Bienvenue sur Lovable.",
+        });
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          variant: "destructive",
+          title: "Erreur de validation",
+          description: error.errors[0].message,
+        });
+      }
     }
 
     setIsLoading(false);
@@ -96,8 +141,8 @@ const Auth = () => {
               <ShoppingBag className="w-8 h-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-3xl font-bold bg-gradient-luxury bg-clip-text text-transparent">
-            eMarket
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+            Lovable
           </CardTitle>
           <CardDescription>
             Votre marketplace de confiance
