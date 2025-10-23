@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -89,6 +90,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO 
+        title="Lovable - Achetez les meilleurs produits en Afrique"
+        description="Explorez les produits les plus tendances sur Lovable. Livraison rapide, paiement sécurisé."
+        url="https://lovable.com/"
+      />
       <Navbar />
       
       <main className="flex-1">

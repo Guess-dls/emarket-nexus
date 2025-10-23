@@ -11,7 +11,7 @@ const Footer = () => {
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary-glow" />
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                Dmarket
+                Lovable
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -27,7 +27,7 @@ const Footer = () => {
               <a href="#" className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="#" className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+              <a href="mailto:ninopaket@gmail.com" className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
                 <Mail className="h-4 w-4" />
               </a>
             </div>
@@ -64,11 +64,20 @@ const Footer = () => {
               <li><Link to="/dashboard" className="hover:text-primary transition-colors">Tableau de bord</Link></li>
               <li><Link to="/orders" className="hover:text-primary transition-colors">Mes commandes</Link></li>
             </ul>
+            <div className="mt-6">
+              <a 
+                href="mailto:ninopaket@gmail.com" 
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity text-sm font-medium"
+              >
+                <Mail className="h-4 w-4" />
+                📧 Nous écrire
+              </a>
+            </div>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© 2025 eMarket. Tous droits réservés.</p>
+          <p>© 2025 Lovable. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
