@@ -213,7 +213,7 @@ export const AddProductDialog = () => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-luxury hover:opacity-90">
+        <Button className="bg-accent hover:opacity-90">
           <Plus className="mr-2 h-4 w-4" />
           Ajouter un produit
         </Button>
