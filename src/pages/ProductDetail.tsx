@@ -175,7 +175,7 @@ const ProductDetail = () => {
                   <span>4.5</span>
                 </div>
                 <span>•</span>
-                <span>Vendu par eMarket</span>
+                <span>Vendu par Lovable</span>
               </div>
             </div>
 

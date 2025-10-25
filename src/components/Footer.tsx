@@ -39,8 +39,8 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/" className="hover:text-primary transition-colors">Tous les produits</Link></li>
               <li><Link to="/" className="hover:text-primary transition-colors">Catégories</Link></li>
-              <li><Link to="/" className="hover:text-primary transition-colors">Nouveautés</Link></li>
-              <li><Link to="/" className="hover:text-primary transition-colors">Promotions</Link></li>
+              <li><Link to="/cart" className="hover:text-primary transition-colors">Mon panier</Link></li>
+              <li><Link to="/checkout" className="hover:text-primary transition-colors">Commander</Link></li>
             </ul>
           </div>
 
@@ -49,9 +49,9 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">Aide</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><a href="mailto:ninopaket@gmail.com" className="hover:text-primary transition-colors">Contact</a></li>
-              <li><Link to="/" className="hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to="/" className="hover:text-primary transition-colors">Livraison</Link></li>
-              <li><Link to="/" className="hover:text-primary transition-colors">Retours</Link></li>
+              <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/client-dashboard" className="hover:text-primary transition-colors">Mes commandes</Link></li>
+              <li><Link to="/seller-dashboard" className="hover:text-primary transition-colors">Espace vendeur</Link></li>
             </ul>
           </div>
 
