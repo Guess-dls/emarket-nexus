@@ -164,7 +164,7 @@ const Index = () => {
               Prêt à vendre vos produits ?
             </h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Rejoignez des milliers de vendeurs qui font confiance à eMarket pour développer leur activité en ligne.
+              Rejoignez des milliers de vendeurs qui font confiance à Lovable pour développer leur activité en ligne.
             </p>
             <Button 
               size="lg"

@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut, Edit, Trash2, Eye } from "lucide-react";
+import { Package, DollarSign, ShoppingCart, TrendingUp, LogOut, Edit, Trash2, Eye, Grid3x3 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ProductCard from "@/components/ProductCard";
 import { AddProductDialog } from "@/components/AddProductDialog";
 import { EditProductDialog } from "@/components/EditProductDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +24,14 @@ interface Product {
   images: string[];
   created_at: string;
   ventes_total: number;
+}
+
+interface AllProduct {
+  id: string;
+  nom: string;
+  prix: number;
+  images: string[];
+  slug: string;
 }
 
 interface VendorOrder {
@@ -51,6 +60,7 @@ const SellerDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<AllProduct[]>([]);
   const [orders, setOrders] = useState<VendorOrder[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -95,6 +105,7 @@ const SellerDashboard = () => {
     await Promise.all([
       loadProducts(),
       loadOrders(),
+      loadAllProducts(),
     ]);
   };
 
@@ -111,6 +122,18 @@ const SellerDashboard = () => {
       setProducts(data);
       const totalSales = data.reduce((sum, p) => sum + (p.ventes_total || 0), 0);
       setStats(prev => ({ ...prev, totalProducts: data.length, totalSales }));
+    }
+  };
+
+  const loadAllProducts = async () => {
+    const { data, error } = await supabase
+      .from("produits")
+      .select("id, nom, prix, images, slug")
+      .eq("statut", "en_ligne")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setAllProducts(data);
     }
   };
 
@@ -356,7 +379,7 @@ const SellerDashboard = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="products">
               <Package className="h-4 w-4 mr-2" />
               Mes Produits
@@ -364,6 +387,10 @@ const SellerDashboard = () => {
             <TabsTrigger value="orders">
               <ShoppingCart className="h-4 w-4 mr-2" />
               Commandes
+            </TabsTrigger>
+            <TabsTrigger value="catalog">
+              <Grid3x3 className="h-4 w-4 mr-2" />
+              Catalogue
             </TabsTrigger>
           </TabsList>
 
@@ -537,6 +564,44 @@ const SellerDashboard = () => {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Catalog Tab */}
+          <TabsContent value="catalog">
+            <Card>
+              <CardHeader>
+                <CardTitle>Catalogue complet</CardTitle>
+                <CardDescription>Tous les produits disponibles sur la plateforme</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {allProducts.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    Aucun produit disponible
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {allProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        id={product.id}
+                        name={product.nom}
+                        price={product.prix}
+                        image={product.images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"}
+                        rating={4.5}
+                        reviews={0}
+                        seller="Lovable"
+                      />
+                    ))}
+                  </div>
+                )}
+                
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {allProducts.length} produit{allProducts.length > 1 ? "s" : ""} disponible{allProducts.length > 1 ? "s" : ""}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

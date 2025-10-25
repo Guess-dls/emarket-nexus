@@ -689,7 +689,7 @@ const ClientDashboard = () => {
                         image={product.images[0]}
                         rating={4.5}
                         reviews={0}
-                        seller="eMarket"
+                        seller="Lovable"
                       />
                     ))}
                   </div>

@@ -37,10 +37,10 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Boutique</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/products" className="hover:text-primary transition-colors">Tous les produits</Link></li>
-              <li><Link to="/categories" className="hover:text-primary transition-colors">Catégories</Link></li>
-              <li><Link to="/new" className="hover:text-primary transition-colors">Nouveautés</Link></li>
-              <li><Link to="/promotions" className="hover:text-primary transition-colors">Promotions</Link></li>
+              <li><Link to="/" className="hover:text-primary transition-colors">Tous les produits</Link></li>
+              <li><Link to="/" className="hover:text-primary transition-colors">Catégories</Link></li>
+              <li><Link to="/" className="hover:text-primary transition-colors">Nouveautés</Link></li>
+              <li><Link to="/" className="hover:text-primary transition-colors">Promotions</Link></li>
             </ul>
           </div>
 
@@ -48,10 +48,10 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Aide</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
-              <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to="/shipping" className="hover:text-primary transition-colors">Livraison</Link></li>
-              <li><Link to="/returns" className="hover:text-primary transition-colors">Retours</Link></li>
+              <li><a href="mailto:ninopaket@gmail.com" className="hover:text-primary transition-colors">Contact</a></li>
+              <li><Link to="/" className="hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/" className="hover:text-primary transition-colors">Livraison</Link></li>
+              <li><Link to="/" className="hover:text-primary transition-colors">Retours</Link></li>
             </ul>
           </div>
 
@@ -60,9 +60,9 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">Mon Compte</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/auth" className="hover:text-primary transition-colors">Connexion</Link></li>
-              <li><Link to="/register" className="hover:text-primary transition-colors">Inscription</Link></li>
-              <li><Link to="/dashboard" className="hover:text-primary transition-colors">Tableau de bord</Link></li>
-              <li><Link to="/orders" className="hover:text-primary transition-colors">Mes commandes</Link></li>
+              <li><Link to="/auth" className="hover:text-primary transition-colors">Inscription</Link></li>
+              <li><Link to="/client-dashboard" className="hover:text-primary transition-colors">Tableau de bord</Link></li>
+              <li><Link to="/cart" className="hover:text-primary transition-colors">Mon panier</Link></li>
             </ul>
             <div className="mt-6">
               <a 

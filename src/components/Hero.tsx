@@ -24,23 +24,24 @@ const Hero = () => {
             
             <p className="text-lg text-muted-foreground max-w-lg">
               Des milliers de produits de qualité, vendus par des vendeurs vérifiés. 
-              Achetez en toute confiance avec Dmarket.
+              Achetez en toute confiance avec Lovable.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity group"
-                asChild
+                onClick={() => {
+                  const productsSection = document.querySelector('section:nth-of-type(2)');
+                  productsSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
-                <Link to="/products">
-                  Explorer les produits
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                Explorer les produits
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               
               <Button size="lg" variant="outline" asChild>
-                <Link to="/sell">
+                <Link to="/auth">
                   <ShoppingBag className="mr-2 h-5 w-5" />
                   Devenir vendeur
                 </Link>
