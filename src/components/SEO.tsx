@@ -9,13 +9,13 @@ interface SEOProps {
 }
 
 const SEO = ({ 
-  title = "Lovable - Boutique e-commerce africaine",
-  description = "Découvrez des produits uniques sur Lovable. Achat simple, rapide et sécurisé.",
+  title = "Dmarket - Boutique e-commerce africaine",
+  description = "Découvrez des produits uniques sur Dmarket. Achat simple, rapide et sécurisé.",
   image = "/og-image.jpg",
-  url = "https://lovable.com/",
+  url = "https://dmarket.com/",
   type = "website"
 }: SEOProps) => {
-  const fullTitle = title.includes("Lovable") ? title : `${title} | Lovable`;
+  const fullTitle = title.includes("Dmarket") ? title : `${title} | Dmarket`;
   
   return (
     <Helmet>

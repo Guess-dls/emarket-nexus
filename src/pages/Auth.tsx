@@ -116,7 +116,7 @@ const Auth = () => {
       } else {
         toast({
           title: "Connexion réussie !",
-          description: "Bienvenue sur Lovable.",
+          description: "Bienvenue sur Dmarket.",
         });
       }
     } catch (error) {
@@ -142,7 +142,7 @@ const Auth = () => {
             </div>
           </div>
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-            Lovable
+            Dmarket
           </CardTitle>
           <CardDescription>
             Votre marketplace de confiance

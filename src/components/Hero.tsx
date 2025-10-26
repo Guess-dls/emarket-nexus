@@ -24,7 +24,7 @@ const Hero = () => {
             
             <p className="text-lg text-muted-foreground max-w-lg">
               Des milliers de produits de qualité, vendus par des vendeurs vérifiés. 
-              Achetez en toute confiance avec Lovable.
+              Achetez en toute confiance avec Dmarket.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">

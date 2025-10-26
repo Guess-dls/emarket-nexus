@@ -91,9 +91,9 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <SEO 
-        title="Lovable - Achetez les meilleurs produits en Afrique"
-        description="Explorez les produits les plus tendances sur Lovable. Livraison rapide, paiement sécurisé."
-        url="https://lovable.com/"
+        title="Dmarket - Achetez les meilleurs produits en Afrique"
+        description="Explorez les produits les plus tendances sur Dmarket. Livraison rapide, paiement sécurisé."
+        url="https://dmarket.com/"
       />
       <Navbar />
       
@@ -164,7 +164,7 @@ const Index = () => {
               Prêt à vendre vos produits ?
             </h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Rejoignez des milliers de vendeurs qui font confiance à Lovable pour développer leur activité en ligne.
+              Rejoignez des milliers de vendeurs qui font confiance à Dmarket pour développer leur activité en ligne.
             </p>
             <Button 
               size="lg"

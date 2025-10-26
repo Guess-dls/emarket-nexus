@@ -37,7 +37,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary-glow" />
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-              Lovable
+              Dmarket
             </span>
           </Link>
         </div>

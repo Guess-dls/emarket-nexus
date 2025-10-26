@@ -11,7 +11,7 @@ const Footer = () => {
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary-glow" />
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                Lovable
+                Dmarket
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -77,7 +77,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© 2025 Lovable. Tous droits réservés.</p>
+          <p>© 2025 Dmarket. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
