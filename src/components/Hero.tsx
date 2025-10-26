@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-background via-muted/30 to-primary/5">
+    <section className="relative overflow-hidden bg-muted/30">
       <div className="container py-20 md:py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
@@ -30,7 +30,7 @@ const Hero = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity group"
+                className="bg-primary hover:opacity-90 transition-opacity group"
                 onClick={() => {
                   const productsSection = document.querySelector('section:nth-of-type(2)');
                   productsSection?.scrollIntoView({ behavior: 'smooth' });
@@ -67,7 +67,7 @@ const Hero = () => {
 
           {/* Image placeholder - will be replaced with actual product showcase */}
           <div className="relative animate-slide-up">
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border border-primary/20 overflow-hidden">
+            <div className="aspect-square rounded-2xl bg-primary/10 border border-primary/20 overflow-hidden">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utb3BhY2l0eT0iLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-40" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <ShoppingBag className="h-32 w-32 text-primary/20" />

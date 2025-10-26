@@ -100,7 +100,7 @@ const Category = () => {
       
       <main className="flex-1">
         {/* Category Header */}
-        <section className="py-16 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
+        <section className="py-16 bg-muted/30">
           <div className="container">
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">{category.nom}</h1>

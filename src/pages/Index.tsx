@@ -158,7 +158,7 @@ const Index = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
+        <section className="py-16 bg-muted/30">
           <div className="container text-center">
             <h2 className="text-3xl font-bold mb-4">
               Prêt à vendre vos produits ?
@@ -168,7 +168,7 @@ const Index = () => {
             </p>
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity"
+              className="bg-primary hover:opacity-90 transition-opacity"
               asChild
             >
               <Link to="/auth">

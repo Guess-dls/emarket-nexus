@@ -133,15 +133,15 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-accent/10 to-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md border-border/50 shadow-elegant">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-luxury flex items-center justify-center">
-              <ShoppingBag className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+              <ShoppingBag className="w-8 h-8 text-primary-foreground" />
             </div>
           </div>
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold text-primary">
             Dmarket
           </CardTitle>
           <CardDescription>

@@ -330,7 +330,7 @@ const SellerDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
+          <Card className="border-0 bg-indigo-500 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Produits</CardTitle>
               <Package className="h-4 w-4" />
@@ -341,7 +341,7 @@ const SellerDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-teal-500 to-teal-600 text-white">
+          <Card className="border-0 bg-teal-500 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Commandes</CardTitle>
               <ShoppingCart className="h-4 w-4" />
@@ -352,7 +352,7 @@ const SellerDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+          <Card className="border-0 bg-amber-500 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Revenus</CardTitle>
               <DollarSign className="h-4 w-4" />
@@ -363,7 +363,7 @@ const SellerDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-gradient-to-br from-pink-500 to-pink-600 text-white">
+          <Card className="border-0 bg-pink-500 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Tendance</CardTitle>
               <TrendingUp className="h-4 w-4" />

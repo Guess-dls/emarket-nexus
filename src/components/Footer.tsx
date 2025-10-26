@@ -9,8 +9,8 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary-glow" />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+              <div className="h-8 w-8 rounded-full bg-primary" />
+              <span className="text-xl font-bold text-primary">
                 Dmarket
               </span>
             </div>

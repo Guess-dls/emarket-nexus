@@ -103,7 +103,7 @@ const ProductCard = ({
 
       <CardFooter className="p-4 pt-0">
         <Button 
-          className="w-full bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity group"
+          className="w-full bg-primary hover:opacity-90 transition-opacity group"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

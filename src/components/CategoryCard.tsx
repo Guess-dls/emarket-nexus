@@ -14,7 +14,7 @@ const CategoryCard = ({ name, icon: Icon, productCount, slug }: CategoryCardProp
     <Link to={`/category/${slug}`}>
       <Card className="group cursor-pointer hover:shadow-lg hover:border-primary/50 transition-all duration-300">
         <CardContent className="p-6 flex flex-col items-center text-center space-y-4">
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:from-primary group-hover:to-primary-glow transition-all duration-300">
+          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-all duration-300">
             <Icon className="h-8 w-8 text-primary group-hover:text-primary-foreground transition-colors" />
           </div>
           <div>
