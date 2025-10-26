@@ -30,7 +30,6 @@ const Navbar = () => {
             variant="ghost" 
             size="icon" 
             onClick={() => navigate(-1)}
-            className="hidden md:flex"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
