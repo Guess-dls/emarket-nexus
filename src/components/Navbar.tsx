@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const { itemCount } = useCart();
@@ -42,9 +43,9 @@ const Navbar = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="h-8 w-8 rounded-full bg-primary" />
+            <img src={logo} alt="DanMaket Logo" className="h-10 w-10 object-contain" />
             <span className="text-xl font-bold text-primary">
-              Dmarket
+              DanMaket
             </span>
           </Link>
         </div>
