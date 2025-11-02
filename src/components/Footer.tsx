@@ -1,5 +1,6 @@
 import { Facebook, Twitter, Instagram, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -9,9 +10,9 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-primary" />
+              <img src={logo} alt="DanMaket Logo" className="h-8 w-8 object-cover rounded-full" />
               <span className="text-xl font-bold text-primary">
-                Dmarket
+                DanMaket
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -77,7 +78,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© 2025 Dmarket. Tous droits réservés.</p>
+          <p>© 2025 DanMaket. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

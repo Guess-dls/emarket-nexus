@@ -43,7 +43,7 @@ const Navbar = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src={logo} alt="DanMaket Logo" className="h-10 w-10 object-contain" />
+            <img src={logo} alt="DanMaket Logo" className="h-10 w-10 object-cover rounded-full" />
             <span className="text-xl font-bold text-primary">
               DanMaket
             </span>

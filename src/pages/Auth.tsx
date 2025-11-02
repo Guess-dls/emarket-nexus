@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Adresse email invalide" }).max(255, { message: "Email trop long" }),
@@ -137,12 +138,10 @@ const Auth = () => {
       <Card className="w-full max-w-md border-border/50 shadow-elegant">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
-              <ShoppingBag className="w-8 h-8 text-primary-foreground" />
-            </div>
+            <img src={logo} alt="DanMaket Logo" className="w-16 h-16 object-cover rounded-full" />
           </div>
           <CardTitle className="text-3xl font-bold text-primary">
-            Dmarket
+            DanMaket
           </CardTitle>
           <CardDescription>
             Votre marketplace de confiance
