@@ -253,6 +253,27 @@ const AdminDashboard = () => {
     setSelectedItem(null);
   };
 
+  const handleReactivateUser = async (userId: string) => {
+    const { error } = await supabase
+      .from("user_roles")
+      .update({ statut: "actif" })
+      .eq("user_id", userId);
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de réactiver l'utilisateur",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: "Utilisateur réactivé avec succès",
+      });
+      loadUsers();
+    }
+  };
+
   const handleDeleteUser = async (userId: string) => {
     const { error } = await supabase
       .from("user_roles")
@@ -320,6 +341,27 @@ const AdminDashboard = () => {
     }
     setSuspendDialogOpen(false);
     setSelectedItem(null);
+  };
+
+  const handleReactivateProduct = async (productId: string) => {
+    const { error } = await supabase
+      .from("produits")
+      .update({ statut: "en_ligne" })
+      .eq("id", productId);
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de réactiver le produit",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: "Produit réactivé avec succès",
+      });
+      loadProducts();
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -488,6 +530,15 @@ const AdminDashboard = () => {
                                   Suspendre
                                 </Button>
                               )}
+                              {u.statut === "suspendu" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleReactivateUser(u.id)}
+                                >
+                                  Réactiver
+                                </Button>
+                              )}
                               <Button
                                 variant="destructive"
                                 size="sm"
@@ -558,6 +609,15 @@ const AdminDashboard = () => {
                                 >
                                   <Ban className="h-4 w-4 mr-1" />
                                   Suspendre
+                                </Button>
+                              )}
+                              {p.statut === "suspendu" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleReactivateProduct(p.id)}
+                                >
+                                  Réactiver
                                 </Button>
                               )}
                               <Button
