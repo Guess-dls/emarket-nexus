@@ -66,6 +66,13 @@ const Navbar = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          <Button variant="ghost" asChild className="hidden md:flex">
+            <Link to="/">
+              <Grid3x3 className="h-5 w-5 mr-2" />
+              Catalogue
+            </Link>
+          </Button>
+          
           <Button variant="ghost" size="icon" className="hidden md:flex">
             <Heart className="h-5 w-5" />
           </Button>
@@ -122,6 +129,14 @@ const Navbar = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-64">
               <nav className="flex flex-col gap-4 mt-8">
+                <Link 
+                  to="/" 
+                  className="flex items-center gap-2 text-lg hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Grid3x3 className="h-5 w-5" />
+                  Catalogue
+                </Link>
                 <Link 
                   to="/cart" 
                   className="flex items-center gap-2 text-lg hover:text-primary transition-colors"

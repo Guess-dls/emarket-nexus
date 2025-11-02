@@ -425,8 +425,12 @@ const ClientDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="cart" className="space-y-6">
+        <Tabs defaultValue="products" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="products">
+              <Grid3x3 className="h-4 w-4 mr-2" />
+              Produits
+            </TabsTrigger>
             <TabsTrigger value="cart">
               <ShoppingCart className="h-4 w-4 mr-2" />
               Panier
@@ -434,10 +438,6 @@ const ClientDashboard = () => {
             <TabsTrigger value="orders">
               <Package className="h-4 w-4 mr-2" />
               Commandes
-            </TabsTrigger>
-            <TabsTrigger value="products">
-              <Grid3x3 className="h-4 w-4 mr-2" />
-              Produits
             </TabsTrigger>
             <TabsTrigger value="categories">
               <Bell className="h-4 w-4 mr-2" />
