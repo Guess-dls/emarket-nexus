@@ -23,7 +23,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Users, Package, ShoppingCart, TrendingUp, LogOut, Settings, Ban, Trash2, Eye } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Users, Package, ShoppingCart, TrendingUp, LogOut, Settings, Ban, Trash2, Eye, MapPin, Phone, Mail, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
@@ -60,6 +67,25 @@ interface OrderData {
   client_email: string;
 }
 
+interface OrderDetailData {
+  id: string;
+  total: number;
+  statut: string;
+  created_at: string;
+  adresse_livraison: string;
+  methode_paiement: string | null;
+  client_nom: string;
+  client_email: string;
+  client_telephone: string | null;
+  items: {
+    id: string;
+    quantite: number;
+    prix_unitaire: number;
+    produit_nom: string;
+    produit_image: string | null;
+  }[];
+}
+
 const AdminDashboard = () => {
   const { user, userRole, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
@@ -79,6 +105,9 @@ const AdminDashboard = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ id: string; type: 'user' | 'product'; name: string } | null>(null);
+  const [orderDetailOpen, setOrderDetailOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderDetailData | null>(null);
+  const [loadingOrderDetail, setLoadingOrderDetail] = useState(false);
 
   useEffect(() => {
     if (!authLoading && (!user || userRole?.role !== "admin")) {
@@ -227,6 +256,77 @@ const AdminDashboard = () => {
         totalOrders: formattedOrders.length,
         totalRevenue,
       }));
+    }
+  };
+
+  const loadOrderDetail = async (orderId: string) => {
+    setLoadingOrderDetail(true);
+    try {
+      const { data: orderData, error: orderError } = await supabase
+        .from("commandes")
+        .select(`
+          id,
+          total,
+          statut,
+          created_at,
+          adresse_livraison,
+          methode_paiement,
+          profiles!commandes_id_client_fkey (
+            nom,
+            email,
+            telephone
+          )
+        `)
+        .eq("id", orderId)
+        .single();
+
+      if (orderError) throw orderError;
+
+      const { data: itemsData, error: itemsError } = await supabase
+        .from("commande_items")
+        .select(`
+          id,
+          quantite,
+          prix_unitaire,
+          produits (
+            nom,
+            images
+          )
+        `)
+        .eq("id_commande", orderId);
+
+      if (itemsError) throw itemsError;
+
+      const orderDetail: OrderDetailData = {
+        id: orderData.id,
+        total: orderData.total,
+        statut: orderData.statut,
+        created_at: orderData.created_at,
+        adresse_livraison: orderData.adresse_livraison,
+        methode_paiement: orderData.methode_paiement,
+        client_nom: orderData.profiles?.nom || "Inconnu",
+        client_email: orderData.profiles?.email || "Inconnu",
+        client_telephone: orderData.profiles?.telephone || null,
+        items: itemsData.map((item: any) => ({
+          id: item.id,
+          quantite: item.quantite,
+          prix_unitaire: item.prix_unitaire,
+          produit_nom: item.produits?.nom || "Produit supprimé",
+          produit_image: item.produits?.images?.[0] || null,
+        })),
+      };
+
+      setSelectedOrder(orderDetail);
+      setOrderDetailOpen(true);
+    } catch (error) {
+      console.error("Error loading order detail:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les détails de la commande",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingOrderDetail(false);
     }
   };
 
@@ -678,9 +778,14 @@ const AdminDashboard = () => {
                             {new Date(o.created_at).toLocaleDateString("fr-FR")}
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => loadOrderDetail(o.id)}
+                              disabled={loadingOrderDetail}
+                            >
                               <Eye className="h-4 w-4 mr-1" />
-                              Voir
+                              Voir détails
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -743,6 +848,106 @@ const AdminDashboard = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <Dialog open={orderDetailOpen} onOpenChange={setOrderDetailOpen}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Détails de la commande</DialogTitle>
+              <DialogDescription>
+                Commande #{selectedOrder?.id.slice(0, 8)}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {selectedOrder && (
+              <div className="space-y-6">
+                {/* Client Info */}
+                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                  <h3 className="font-semibold text-lg">Informations client</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{selectedOrder.client_nom}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{selectedOrder.client_email}</span>
+                    </div>
+                    {selectedOrder.client_telephone && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">{selectedOrder.client_telephone}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{selectedOrder.adresse_livraison}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order Info */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Statut</p>
+                    {getStatusBadge(selectedOrder.statut)}
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Date</p>
+                    <p className="text-sm font-medium">
+                      {new Date(selectedOrder.created_at).toLocaleDateString("fr-FR")}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Paiement</p>
+                    <div className="flex items-center gap-1">
+                      <CreditCard className="h-3 w-3 text-muted-foreground" />
+                      <p className="text-sm font-medium capitalize">
+                        {selectedOrder.methode_paiement || "Non spécifié"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Total</p>
+                    <p className="text-lg font-bold text-primary">
+                      {Number(selectedOrder.total).toFixed(2)} €
+                    </p>
+                  </div>
+                </div>
+
+                {/* Items */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-lg">Produits commandés</h3>
+                  <div className="border rounded-lg divide-y">
+                    {selectedOrder.items.map((item) => (
+                      <div key={item.id} className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors">
+                        {item.produit_image ? (
+                          <img
+                            src={item.produit_image}
+                            alt={item.produit_nom}
+                            className="w-16 h-16 object-cover rounded-md"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-muted rounded-md flex items-center justify-center">
+                            <Package className="h-6 w-6 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{item.produit_nom}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.quantite} × {Number(item.prix_unitaire).toFixed(2)} €
+                          </p>
+                        </div>
+                        <p className="font-semibold">
+                          {(item.quantite * Number(item.prix_unitaire)).toFixed(2)} €
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
 
       <Footer />
