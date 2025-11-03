@@ -35,34 +35,40 @@ const ProductCard = ({
 
   return (
     <Card className="group overflow-hidden card-hover border-border/50">
-      <Link to={`/product/${id}`}>
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted to-muted/50">
-          <img
-            src={image}
-            alt={name}
-            className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
-          {badge && (
-            <Badge className="absolute top-3 left-3 bg-gradient-primary text-white shadow-primary animate-scale-in">
-              {badge}
-            </Badge>
-          )}
-          {discount > 0 && (
-            <Badge className="absolute top-3 right-3 bg-gradient-accent text-white shadow-lg animate-scale-in">
-              -{discount}%
-            </Badge>
-          )}
-          <Button
-            size="icon"
-            variant="secondary"
-            className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 glass-effect hover:scale-110"
-          >
-            <Heart className="h-4 w-4" />
-          </Button>
-        </div>
-      </Link>
+      <div className="relative">
+        <Link to={`/product/${id}`}>
+          <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted to-muted/50">
+            <img
+              src={image}
+              alt={name}
+              className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            
+            {badge && (
+              <Badge className="absolute top-3 left-3 bg-gradient-primary text-white shadow-primary animate-scale-in">
+                {badge}
+              </Badge>
+            )}
+            {discount > 0 && (
+              <Badge className="absolute top-3 right-3 bg-gradient-accent text-white shadow-lg animate-scale-in">
+                -{discount}%
+              </Badge>
+            )}
+          </div>
+        </Link>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 glass-effect hover:scale-110 z-10"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <Heart className="h-4 w-4" />
+        </Button>
+      </div>
 
       <CardContent className="p-4 space-y-2">
         <Link to={`/product/${id}`}>
