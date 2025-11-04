@@ -330,45 +330,49 @@ const SellerDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 bg-indigo-500 text-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-0 bg-indigo-500 text-white card-hover overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Produits</CardTitle>
               <Package className="h-4 w-4" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="text-2xl font-bold">{stats.totalProducts}</div>
               <p className="text-xs text-white/80">{stats.totalSales} ventes</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-teal-500 text-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-0 bg-teal-500 text-white card-hover overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Commandes</CardTitle>
               <ShoppingCart className="h-4 w-4" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="text-2xl font-bold">{stats.totalOrders}</div>
               <p className="text-xs text-white/80">Commandes reçues</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-amber-500 text-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-0 bg-amber-500 text-white card-hover overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Revenus</CardTitle>
               <DollarSign className="h-4 w-4" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="text-2xl font-bold">{stats.totalRevenue.toFixed(2)} €</div>
               <p className="text-xs text-white/80">Total des revenus</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-pink-500 text-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-0 bg-pink-500 text-white card-hover overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Tendance</CardTitle>
               <TrendingUp className="h-4 w-4" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="text-2xl font-bold">
                 {stats.totalOrders > 0 ? "↗" : "→"}
               </div>
@@ -581,7 +585,7 @@ const SellerDashboard = () => {
                     Aucun produit disponible
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {allProducts.map((product) => (
                       <ProductCard
                         key={product.id}

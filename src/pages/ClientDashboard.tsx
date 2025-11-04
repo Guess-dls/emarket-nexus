@@ -379,45 +379,49 @@ const ClientDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-blue))` }}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-0 text-white card-hover overflow-hidden relative" style={{ background: `hsl(var(--card-blue))` }}>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Commandes</CardTitle>
               <Package className="h-4 w-4" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="text-2xl font-bold">{stats.totalOrders}</div>
               <p className="text-xs text-white/80">Total des commandes</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-green))` }}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-0 text-white card-hover overflow-hidden relative" style={{ background: `hsl(var(--card-green))` }}>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Dépenses</CardTitle>
               <ShoppingBag className="h-4 w-4" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="text-2xl font-bold">{stats.totalSpent.toFixed(2)} €</div>
               <p className="text-xs text-white/80">Total dépensé</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-purple))` }}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-0 text-white card-hover overflow-hidden relative" style={{ background: `hsl(var(--card-purple))` }}>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Panier</CardTitle>
               <ShoppingCart className="h-4 w-4" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="text-2xl font-bold">{itemCount}</div>
               <p className="text-xs text-white/80">{total.toFixed(2)} €</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-orange))` }}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-0 text-white card-hover overflow-hidden relative" style={{ background: `hsl(var(--card-orange))` }}>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Profil</CardTitle>
               <User className="h-4 w-4" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="text-sm font-medium truncate">{user?.email}</div>
               <p className="text-xs text-white/80">Client actif</p>
             </CardContent>
@@ -679,7 +683,7 @@ const ClientDashboard = () => {
                     Aucun produit disponible
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {products.map((product) => (
                       <ProductCard
                         key={product.id}
@@ -717,12 +721,12 @@ const ClientDashboard = () => {
                     Aucune catégorie disponible
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {categories.map((category) => (
                       <Link
                         key={category.id}
                         to={`/category/${category.slug}`}
-                        className="p-6 rounded-lg border bg-card hover:bg-accent hover:shadow-lg transition-all group"
+                        className="p-6 rounded-lg border bg-card hover:bg-accent hover:shadow-lg transition-all group card-hover"
                       >
                         <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
                           {category.nom}
