@@ -683,8 +683,8 @@ const ClientDashboard = () => {
                     Aucun produit disponible
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {products.map((product) => (
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              {products.map((product) => (
                       <ProductCard
                         key={product.id}
                         id={product.id}
