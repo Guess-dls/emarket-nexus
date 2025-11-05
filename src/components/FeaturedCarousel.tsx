@@ -74,7 +74,7 @@ const FeaturedCarousel = () => {
         <div className="flex gap-4">
           {products.map((item) => (
             <div key={item.id} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0">
-              <Link to={`/product/${item.produits.slug}`}>
+              <Link to={`/product/${item.produits.id}`}>
                 <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="aspect-square relative">
                     <img

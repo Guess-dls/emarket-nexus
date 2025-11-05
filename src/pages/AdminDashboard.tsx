@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import FeaturedProductsManager from "@/components/FeaturedProductsManager";
+import AdminSearch from "@/components/AdminSearch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -566,7 +567,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="users">
               <Users className="h-4 w-4 mr-2" />
               Utilisateurs
@@ -582,6 +583,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="featured">
               <TrendingUp className="h-4 w-4 mr-2" />
               Produits Vedettes
+            </TabsTrigger>
+            <TabsTrigger value="search">
+              Recherche & Email
             </TabsTrigger>
           </TabsList>
 
@@ -804,6 +808,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="featured">
             <FeaturedProductsManager />
+          </TabsContent>
+
+          <TabsContent value="search">
+            <AdminSearch />
           </TabsContent>
         </Tabs>
 

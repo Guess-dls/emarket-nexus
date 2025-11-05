@@ -68,8 +68,7 @@ const Navbar = () => {
         <div className="flex items-center gap-2">
           <Button variant="ghost" asChild className="hidden md:flex">
             <Link to="/">
-              <Grid3x3 className="h-5 w-5 mr-2" />
-              Catalogue
+              Accueil
             </Link>
           </Button>
           
