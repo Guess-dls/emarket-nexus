@@ -5,6 +5,7 @@ import Hero from "@/components/Hero";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
 import SEO from "@/components/SEO";
+import FeaturedCarousel from "@/components/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -99,6 +100,19 @@ const Index = () => {
       
       <main className="flex-1">
         <Hero />
+
+        {/* Featured Products Carousel */}
+        <section className="py-16">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Produits en vedette</h2>
+              <p className="text-muted-foreground">
+                Découvrez notre sélection de produits exceptionnels
+              </p>
+            </div>
+            <FeaturedCarousel />
+          </div>
+        </section>
 
         {/* Categories Section */}
         <section className="py-16 bg-muted/30">

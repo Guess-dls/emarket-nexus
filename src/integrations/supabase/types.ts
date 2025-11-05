@@ -300,6 +300,35 @@ export type Database = {
           },
         ]
       }
+      produits_vedettes: {
+        Row: {
+          created_at: string | null
+          id: string
+          id_produit: string
+          position: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          id_produit: string
+          position: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          id_produit?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "produits_vedettes_id_produit_fkey"
+            columns: ["id_produit"]
+            isOneToOne: true
+            referencedRelation: "produits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           adresse: string | null
