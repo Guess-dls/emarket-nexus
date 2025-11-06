@@ -51,6 +51,8 @@ interface VendorOrder {
     profiles: {
       nom: string;
       email: string;
+      telephone?: string;
+      adresse?: string;
     };
   };
 }
@@ -171,9 +173,9 @@ const SellerDashboard = () => {
         data.map(async (order: any) => {
           const { data: profile } = await supabase
             .from("profiles")
-            .select("nom, email")
+            .select("nom, email, telephone, adresse")
             .eq("id", order.commandes?.id_client)
-            .single();
+            .maybeSingle();
           
           return {
             ...order,
@@ -494,8 +496,18 @@ const SellerDashboard = () => {
                             <div className="text-sm space-y-1">
                               <p>
                                 <span className="text-muted-foreground">Client:</span>{" "}
-                                {order.commandes?.profiles?.nom || order.commandes?.profiles?.email}
+                                <span className="font-medium">{order.commandes?.profiles?.nom || "N/A"}</span>
                               </p>
+                              <p>
+                                <span className="text-muted-foreground">Email:</span>{" "}
+                                {order.commandes?.profiles?.email || "N/A"}
+                              </p>
+                              {order.commandes?.profiles?.telephone && (
+                                <p>
+                                  <span className="text-muted-foreground">Téléphone:</span>{" "}
+                                  {order.commandes?.profiles?.telephone}
+                                </p>
+                              )}
                               <p>
                                 <span className="text-muted-foreground">Quantité:</span>{" "}
                                 {order.quantite}
@@ -667,15 +679,27 @@ const SellerDashboard = () => {
                   <div className="text-sm space-y-1">
                     <p>
                       <span className="text-muted-foreground">Nom:</span>{" "}
-                      {selectedOrder.commandes?.profiles?.nom || "N/A"}
+                      <span className="font-medium">{selectedOrder.commandes?.profiles?.nom || "N/A"}</span>
                     </p>
                     <p>
                       <span className="text-muted-foreground">Email:</span>{" "}
-                      {selectedOrder.commandes?.profiles?.email || "N/A"}
+                      <span className="font-medium">{selectedOrder.commandes?.profiles?.email || "N/A"}</span>
                     </p>
+                    {selectedOrder.commandes?.profiles?.telephone && (
+                      <p>
+                        <span className="text-muted-foreground">Téléphone:</span>{" "}
+                        <span className="font-medium">{selectedOrder.commandes?.profiles?.telephone}</span>
+                      </p>
+                    )}
+                    {selectedOrder.commandes?.profiles?.adresse && (
+                      <p>
+                        <span className="text-muted-foreground">Adresse du profil:</span>{" "}
+                        <span className="font-medium">{selectedOrder.commandes?.profiles?.adresse}</span>
+                      </p>
+                    )}
                     <p>
                       <span className="text-muted-foreground">Adresse de livraison:</span>{" "}
-                      {selectedOrder.commandes?.adresse_livraison || "N/A"}
+                      <span className="font-medium">{selectedOrder.commandes?.adresse_livraison || "N/A"}</span>
                     </p>
                   </div>
                 </div>
