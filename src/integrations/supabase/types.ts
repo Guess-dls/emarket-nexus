@@ -466,6 +466,14 @@ export type Database = {
         Args: { _commande_id: string }
         Returns: undefined
       }
+      vendor_can_view_profile: {
+        Args: { _profile: string; _vendor: string }
+        Returns: boolean
+      }
+      vendor_has_commande: {
+        Args: { _commande: string; _vendor: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "client" | "vendeur" | "admin"
