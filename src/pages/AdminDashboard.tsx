@@ -94,6 +94,7 @@ const AdminDashboard = () => {
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("users");
   const [users, setUsers] = useState<UserData[]>([]);
   const [products, setProducts] = useState<ProductData[]>([]);
   const [orders, setOrders] = useState<OrderData[]>([]);
@@ -504,88 +505,105 @@ const AdminDashboard = () => {
       <Navbar />
       
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-4xl font-bold mb-2">Admin</h1>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline">
-              <Settings className="mr-2 h-4 w-4" />
-              Paramètres
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            <Button variant="outline" className="flex-1 sm:flex-none">
+              <Settings className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Paramètres</span>
             </Button>
-            <Button variant="outline" onClick={signOut}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Déconnexion
+            <Button variant="outline" onClick={signOut} className="flex-1 sm:flex-none">
+              <LogOut className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Déconnexion</span>
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--primary))` }}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
+          <Card 
+            className="border-0 text-white cursor-pointer hover:opacity-90 transition-opacity" 
+            style={{ background: `hsl(var(--primary))` }}
+            onClick={() => setActiveTab("users")}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">Utilisateurs</CardTitle>
-              <Users className="h-4 w-4 text-white/80" />
+              <CardTitle className="text-xs sm:text-sm font-medium text-white">Utilisateurs</CardTitle>
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-white/80" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalUsers}</div>
-              <p className="text-xs text-white/80">Total utilisateurs</p>
+              <div className="text-xl sm:text-2xl font-bold">{stats.totalUsers}</div>
+              <p className="text-[10px] sm:text-xs text-white/80">Total utilisateurs</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--destructive))` }}>
+          <Card 
+            className="border-0 text-white cursor-pointer hover:opacity-90 transition-opacity" 
+            style={{ background: `hsl(var(--destructive))` }}
+            onClick={() => setActiveTab("products")}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">Produits</CardTitle>
-              <Package className="h-4 w-4 text-white/80" />
+              <CardTitle className="text-xs sm:text-sm font-medium text-white">Produits</CardTitle>
+              <Package className="h-3 w-3 sm:h-4 sm:w-4 text-white/80" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalProducts}</div>
-              <p className="text-xs text-white/80">Total produits</p>
+              <div className="text-xl sm:text-2xl font-bold">{stats.totalProducts}</div>
+              <p className="text-[10px] sm:text-xs text-white/80">Total produits</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--accent))` }}>
+          <Card 
+            className="border-0 text-white cursor-pointer hover:opacity-90 transition-opacity" 
+            style={{ background: `hsl(var(--accent))` }}
+            onClick={() => setActiveTab("orders")}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">Commandes</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-white/80" />
+              <CardTitle className="text-xs sm:text-sm font-medium text-white">Commandes</CardTitle>
+              <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-white/80" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalOrders}</div>
-              <p className="text-xs text-white/80">Total commandes</p>
+              <div className="text-xl sm:text-2xl font-bold">{stats.totalOrders}</div>
+              <p className="text-[10px] sm:text-xs text-white/80">Total commandes</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 text-white" style={{ background: `hsl(var(--card-green))` }}>
+          <Card 
+            className="border-0 text-white cursor-pointer hover:opacity-90 transition-opacity" 
+            style={{ background: `hsl(var(--card-green))` }}
+            onClick={() => setActiveTab("orders")}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">Revenus</CardTitle>
-              <TrendingUp className="h-4 w-4 text-white/80" />
+              <CardTitle className="text-xs sm:text-sm font-medium text-white">Revenus</CardTitle>
+              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-white/80" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalRevenue.toFixed(2)} €</div>
-              <p className="text-xs text-white/80">Total plateforme</p>
+              <div className="text-xl sm:text-2xl font-bold">{stats.totalRevenue.toFixed(2)} €</div>
+              <p className="text-[10px] sm:text-xs text-white/80">Total plateforme</p>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="users">
-              <Users className="h-4 w-4 mr-2" />
-              Utilisateurs
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 h-auto">
+            <TabsTrigger value="users" className="flex-col sm:flex-row gap-1 py-2">
+              <Users className="h-4 w-4 sm:mr-2" />
+              <span className="text-xs sm:text-sm">Utilisateurs</span>
             </TabsTrigger>
-            <TabsTrigger value="products">
-              <Package className="h-4 w-4 mr-2" />
-              Produits
+            <TabsTrigger value="products" className="flex-col sm:flex-row gap-1 py-2">
+              <Package className="h-4 w-4 sm:mr-2" />
+              <span className="text-xs sm:text-sm">Produits</span>
             </TabsTrigger>
-            <TabsTrigger value="orders">
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Commandes
+            <TabsTrigger value="orders" className="flex-col sm:flex-row gap-1 py-2">
+              <ShoppingCart className="h-4 w-4 sm:mr-2" />
+              <span className="text-xs sm:text-sm">Commandes</span>
             </TabsTrigger>
-            <TabsTrigger value="featured">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Produits Vedettes
+            <TabsTrigger value="featured" className="flex-col sm:flex-row gap-1 py-2">
+              <TrendingUp className="h-4 w-4 sm:mr-2" />
+              <span className="text-xs sm:text-sm whitespace-nowrap">Vedettes</span>
             </TabsTrigger>
-            <TabsTrigger value="search">
-              Recherche & Email
+            <TabsTrigger value="search" className="flex-col sm:flex-row gap-1 py-2">
+              <Mail className="h-4 w-4 sm:mr-2" />
+              <span className="text-xs sm:text-sm whitespace-nowrap">Email</span>
             </TabsTrigger>
           </TabsList>
 
