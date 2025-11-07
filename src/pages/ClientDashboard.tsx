@@ -630,34 +630,39 @@ const ClientDashboard = () => {
                               {Number(order.total).toFixed(2)} €
                             </p>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-1.5 sm:gap-2 flex-wrap">
                             {order.statut === "en_attente" && (
-                              <>
-                                <Button 
-                                  variant="destructive" 
-                                  size="sm"
-                                  onClick={() => deleteOrder(order.id, order.statut)}
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Supprimer
-                                </Button>
-                              </>
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                onClick={() => deleteOrder(order.id, order.statut)}
+                                className="flex-shrink-0"
+                              >
+                                <Trash2 className="h-4 w-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Supprimer</span>
+                              </Button>
                             )}
                             {(order.statut === "en_attente" || order.statut === "en_cours") && (
                               <Button 
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => cancelOrder(order.id, order.statut)}
+                                className="flex-shrink-0"
                               >
-                                Annuler
+                                <span>Annuler</span>
                               </Button>
                             )}
-                            <Button variant="outline" size="sm" onClick={() => {
-                              setSelectedOrder(order);
-                              setOrderDetailOpen(true);
-                            }}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              Détails
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setOrderDetailOpen(true);
+                              }}
+                              className="flex-shrink-0"
+                            >
+                              <Eye className="h-4 w-4 sm:mr-2" />
+                              <span className="hidden sm:inline">Détails</span>
                             </Button>
                           </div>
                           </div>
