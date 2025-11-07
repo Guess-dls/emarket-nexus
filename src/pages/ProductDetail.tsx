@@ -19,10 +19,15 @@ interface Product {
   id_vendeur: string;
 }
 
+interface Vendeur {
+  nom: string;
+}
+
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
+  const [vendeur, setVendeur] = useState<Vendeur | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -75,6 +80,20 @@ const ProductDetail = () => {
     }
 
     setProduct(data);
+
+    // Load vendor info
+    if (data.id_vendeur) {
+      const { data: vendeurData } = await supabase
+        .from("profiles")
+        .select("nom")
+        .eq("id", data.id_vendeur)
+        .maybeSingle();
+      
+      if (vendeurData) {
+        setVendeur(vendeurData);
+      }
+    }
+    
     setLoading(false);
   };
 
@@ -175,7 +194,7 @@ const ProductDetail = () => {
                   <span>4.5</span>
                 </div>
                 <span>•</span>
-                <span>Vendu par Lovable</span>
+                <span>Vendu par {vendeur?.nom || "Vendeur"}</span>
               </div>
             </div>
 
