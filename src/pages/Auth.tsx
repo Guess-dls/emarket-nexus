@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const loginSchema = z.object({
@@ -148,6 +148,12 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <Link to="/" className="block mb-4">
+            <Button variant="ghost" className="w-full">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour à l'accueil
+            </Button>
+          </Link>
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Connexion</TabsTrigger>
@@ -182,6 +188,11 @@ const Auth = () => {
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Se connecter
                 </Button>
+                <div className="text-center mt-2">
+                  <Link to="/reset-password" className="text-sm text-primary hover:underline">
+                    Mot de passe oublié ?
+                  </Link>
+                </div>
               </form>
             </TabsContent>
 
