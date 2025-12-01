@@ -32,7 +32,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Users, Package, ShoppingCart, TrendingUp, LogOut, Settings, Ban, Trash2, Eye, MapPin, Phone, Mail, CreditCard } from "lucide-react";
+import { Users, Package, ShoppingCart, TrendingUp, LogOut, Settings, Ban, Trash2, Eye, MapPin, Phone, Mail, CreditCard, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
@@ -85,6 +85,9 @@ interface OrderDetailData {
     prix_unitaire: number;
     produit_nom: string;
     produit_image: string | null;
+    vendeur_nom: string;
+    vendeur_email: string;
+    vendeur_telephone: string | null;
   }[];
 }
 
@@ -293,7 +296,13 @@ const AdminDashboard = () => {
           prix_unitaire,
           produits (
             nom,
-            images
+            images,
+            id_vendeur,
+            profiles:id_vendeur (
+              nom,
+              email,
+              telephone
+            )
           )
         `)
         .eq("id_commande", orderId);
@@ -316,6 +325,9 @@ const AdminDashboard = () => {
           prix_unitaire: item.prix_unitaire,
           produit_nom: item.produits?.nom || "Produit supprimé",
           produit_image: item.produits?.images?.[0] || null,
+          vendeur_nom: item.produits?.profiles?.nom || "Vendeur inconnu",
+          vendeur_email: item.produits?.profiles?.email || "Email inconnu",
+          vendeur_telephone: item.produits?.profiles?.telephone || null,
         })),
       };
 
@@ -954,27 +966,49 @@ const AdminDashboard = () => {
                   <h3 className="font-semibold text-lg">Produits commandés</h3>
                   <div className="border rounded-lg divide-y">
                     {selectedOrder.items.map((item) => (
-                      <div key={item.id} className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors">
-                        {item.produit_image ? (
-                          <img
-                            src={item.produit_image}
-                            alt={item.produit_nom}
-                            className="w-16 h-16 object-cover rounded-md"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 bg-muted rounded-md flex items-center justify-center">
-                            <Package className="h-6 w-6 text-muted-foreground" />
+                      <div key={item.id} className="p-4 hover:bg-muted/30 transition-colors space-y-3">
+                        <div className="flex items-center gap-4">
+                          {item.produit_image ? (
+                            <img
+                              src={item.produit_image}
+                              alt={item.produit_nom}
+                              className="w-16 h-16 object-cover rounded-md"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 bg-muted rounded-md flex items-center justify-center">
+                              <Package className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{item.produit_nom}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {item.quantite} × {Number(item.prix_unitaire).toFixed(2)} €
+                            </p>
                           </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{item.produit_nom}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {item.quantite} × {Number(item.prix_unitaire).toFixed(2)} €
+                          <p className="font-semibold">
+                            {(item.quantite * Number(item.prix_unitaire)).toFixed(2)} €
                           </p>
                         </div>
-                        <p className="font-semibold">
-                          {(item.quantite * Number(item.prix_unitaire)).toFixed(2)} €
-                        </p>
+                        {/* Vendor Info */}
+                        <div className="bg-muted/50 rounded-md p-3 ml-20">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">Informations vendeur :</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <User className="h-3 w-3 text-muted-foreground" />
+                              <span>{item.vendeur_nom}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Mail className="h-3 w-3 text-muted-foreground" />
+                              <span className="truncate">{item.vendeur_email}</span>
+                            </div>
+                            {item.vendeur_telephone && (
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-3 w-3 text-muted-foreground" />
+                                <span>{item.vendeur_telephone}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

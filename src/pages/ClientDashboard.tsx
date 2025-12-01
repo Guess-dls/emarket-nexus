@@ -20,7 +20,8 @@ import {
   Trash2,
   Plus,
   Minus,
-  Eye
+  Eye,
+  Store
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Navbar from "@/components/Navbar";
@@ -256,6 +257,33 @@ const ClientDashboard = () => {
     }
   };
 
+  const becomeSeller = async () => {
+    if (!user) return;
+
+    if (!confirm("Voulez-vous devenir vendeur ? Vous pourrez vendre vos produits sur DanMaket.")) return;
+
+    const { error } = await supabase
+      .from("user_roles")
+      .insert({
+        user_id: user.id,
+        role: "vendeur",
+        statut: "actif"
+      });
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de devenir vendeur. Vous êtes peut-être déjà vendeur.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Félicitations !",
+        description: "Vous êtes maintenant vendeur. Rechargez la page pour accéder à votre espace vendeur.",
+      });
+    }
+  };
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderDetailOpen, setOrderDetailOpen] = useState(false);
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
@@ -364,17 +392,23 @@ const ClientDashboard = () => {
       <Navbar />
       
       <main className="flex-1 container py-8">
-        <div className="mb-8 flex justify-between items-start">
+        <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-4xl font-bold mb-2">Tableau de bord</h1>
             <p className="text-muted-foreground">
               Bienvenue {user?.email} - Gérez vos achats et commandes
             </p>
           </div>
-          <Button variant="outline" onClick={signOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Déconnexion
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="default" onClick={becomeSeller}>
+              <Store className="mr-2 h-4 w-4" />
+              Devenir vendeur
+            </Button>
+            <Button variant="outline" onClick={signOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Déconnexion
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
