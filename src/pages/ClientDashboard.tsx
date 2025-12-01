@@ -71,6 +71,7 @@ const ClientDashboard = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAlreadySeller, setIsAlreadySeller] = useState(false);
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalSpent: 0,
@@ -82,6 +83,7 @@ const ClientDashboard = () => {
       navigate("/auth");
     } else if (user) {
       loadDashboardData();
+      checkIfSeller();
       
       // Setup realtime subscription for order updates
       const channel = supabase
@@ -124,6 +126,19 @@ const ClientDashboard = () => {
       };
     }
   }, [user, userRole, authLoading, navigate]);
+
+  const checkIfSeller = async () => {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "vendeur")
+      .maybeSingle();
+
+    setIsAlreadySeller(!!data);
+  };
 
   const loadDashboardData = async () => {
     setLoading(true);
@@ -400,10 +415,12 @@ const ClientDashboard = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="default" onClick={becomeSeller}>
-              <Store className="mr-2 h-4 w-4" />
-              Devenir vendeur
-            </Button>
+            {!isAlreadySeller && (
+              <Button variant="default" onClick={becomeSeller}>
+                <Store className="mr-2 h-4 w-4" />
+                Devenir vendeur
+              </Button>
+            )}
             <Button variant="outline" onClick={signOut}>
               <LogOut className="mr-2 h-4 w-4" />
               Déconnexion
