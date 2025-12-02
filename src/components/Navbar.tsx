@@ -45,7 +45,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img src={logo} alt="DanMaket Logo" className="h-10 w-10 object-cover rounded-full" />
             <span className="text-xl font-bold text-primary">
-              DanMaket
+              Dmarket
             </span>
           </Link>
         </div>
