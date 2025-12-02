@@ -71,11 +71,24 @@ export const useAuth = () => {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role, statut")
-        .eq("user_id", userId)
-        .single();
+        .eq("user_id", userId);
 
       if (error) throw error;
-      setUserRole(data);
+
+      if (!data || data.length === 0) {
+        setUserRole(null);
+      } else {
+        // Prioriser admin > vendeur > client, en privilégiant les rôles actifs
+        const roles = data as UserRoleData[];
+        const activeRoles = roles.filter((r) => r.statut === "actif");
+        const candidates = activeRoles.length > 0 ? activeRoles : roles;
+        const priority: UserRole[] = ["admin", "vendeur", "client"];
+        const selected =
+          priority
+            .map((role) => candidates.find((r) => r.role === role))
+            .find((r): r is UserRoleData => !!r) || candidates[0];
+        setUserRole(selected);
+      }
     } catch (error) {
       console.error("Error fetching user role:", error);
       setUserRole(null);
