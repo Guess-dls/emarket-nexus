@@ -278,18 +278,12 @@ const ClientDashboard = () => {
 
     if (!confirm("Voulez-vous devenir vendeur ? Vous pourrez vendre vos produits sur DanMaket.")) return;
 
-    const { error } = await supabase
-      .from("user_roles")
-      .insert({
-        user_id: user.id,
-        role: "vendeur",
-        statut: "actif"
-      });
+    const { error } = await supabase.rpc("become_seller");
 
     if (error) {
       toast({
         title: "Erreur",
-        description: "Impossible de devenir vendeur. Vous êtes peut-être déjà vendeur.",
+        description: "Une erreur s'est produite. Veuillez réessayer.",
         variant: "destructive",
       });
     } else {
@@ -297,6 +291,8 @@ const ClientDashboard = () => {
         title: "Félicitations !",
         description: "Vous êtes maintenant vendeur. Rechargez la page pour accéder à votre espace vendeur.",
       });
+      // Refresh the seller check
+      checkIfSeller();
     }
   };
 
