@@ -451,6 +451,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      become_seller: { Args: never; Returns: undefined }
       create_notification: {
         Args: { _message: string; _type?: string; _user_id: string }
         Returns: string
