@@ -141,7 +141,7 @@ const Auth = () => {
             <img src={logo} alt="DanMaket Logo" className="w-16 h-16 object-cover rounded-full" />
           </div>
           <CardTitle className="text-3xl font-bold text-primary">
-            DanMaket
+            Dmarket
           </CardTitle>
           <CardDescription>
             Votre marketplace de confiance
