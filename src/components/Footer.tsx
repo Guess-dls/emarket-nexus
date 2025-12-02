@@ -15,7 +15,7 @@ const Footer = () => {
             <div className="flex items-center gap-2">
               <img src={logo} alt="DanMaket Logo" className="h-8 w-8 object-cover rounded-full" />
               <span className="text-xl font-bold text-primary">
-                DanMaket
+                Dmarket
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -99,7 +99,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© 2025 DanMaket. Tous droits réservés.</p>
+          <p>© 2025 Dmarket. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
