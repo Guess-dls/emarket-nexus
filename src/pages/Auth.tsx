@@ -39,7 +39,7 @@ const Auth = () => {
   const [signupRole, setSignupRole] = useState<"client" | "vendeur">("client");
 
   useEffect(() => {
-    if (user && user.email_confirmed_at && userRole) {
+    if (user && userRole) {
       // Redirect based on role
       switch (userRole.role) {
         case "admin":
