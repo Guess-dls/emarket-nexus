@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -26,9 +26,30 @@ const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
-  // Check if we're in update mode (coming from email link)
-  const isUpdateMode = searchParams.get('type') === 'recovery';
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+
+  // Check session and recovery mode on mount
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // If we have a session and it's from a recovery link, enable update mode
+      if (session && searchParams.get('type') === 'recovery') {
+        setIsUpdateMode(true);
+      }
+    };
+
+    checkSession();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsUpdateMode(true);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [searchParams]);
 
   const handleSendResetEmail = async (e: React.FormEvent) => {
     e.preventDefault();
