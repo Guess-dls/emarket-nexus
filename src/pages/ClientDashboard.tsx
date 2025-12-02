@@ -135,6 +135,7 @@ const ClientDashboard = () => {
       .select("role")
       .eq("user_id", user.id)
       .eq("role", "vendeur")
+      .eq("statut", "actif")
       .maybeSingle();
 
     setIsAlreadySeller(!!data);
