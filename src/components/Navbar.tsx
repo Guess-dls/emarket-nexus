@@ -66,11 +66,11 @@ const Navbar = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <Button variant="ghost" asChild className="hidden md:flex">
-            <Link to="/">
+          <Link to="/" className="hidden md:flex">
+            <Button variant="ghost">
               Accueil
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           
           <Button variant="ghost" size="icon" className="hidden md:flex">
             <Heart className="h-5 w-5" />
