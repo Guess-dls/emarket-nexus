@@ -39,20 +39,28 @@ const Auth = () => {
   const [signupRole, setSignupRole] = useState<"client" | "vendeur">("client");
 
   useEffect(() => {
-    if (user && userRole) {
-      // Redirect based on role
-      switch (userRole.role) {
-        case "admin":
-          navigate("/admin-dashboard");
-          break;
-        case "vendeur":
-          navigate("/seller-dashboard");
-          break;
-        case "client":
-          navigate("/client-dashboard");
-          break;
-        default:
-          navigate("/");
+    if (user) {
+      if (userRole) {
+        // Redirect based on role
+        switch (userRole.role) {
+          case "admin":
+            navigate("/admin-dashboard", { replace: true });
+            break;
+          case "vendeur":
+            navigate("/seller-dashboard", { replace: true });
+            break;
+          case "client":
+            navigate("/client-dashboard", { replace: true });
+            break;
+          default:
+            navigate("/", { replace: true });
+        }
+      } else {
+        // If user exists but role is still loading, wait a bit then redirect to home
+        const timeout = setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 3000);
+        return () => clearTimeout(timeout);
       }
     }
   }, [user, userRole, navigate]);
