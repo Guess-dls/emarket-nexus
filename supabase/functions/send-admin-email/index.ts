@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@4.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -16,6 +17,16 @@ interface EmailRequest {
   message: string;
 }
 
+// HTML escape function to prevent XSS/injection
+const escapeHtml = (str: string): string => {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -23,14 +34,86 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { to, recipientName, subject, message }: EmailRequest = await req.json();
+    // Verify admin authorization
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      console.error("Missing authorization header");
+      return new Response(
+        JSON.stringify({ error: "Non autorisé" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
-    console.log("Sending email to:", to);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    // Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error("User authentication failed:", userError);
+      return new Response(
+        JSON.stringify({ error: "Non autorisé" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Verify admin role using the has_role function
+    const { data: isAdmin, error: roleError } = await supabase.rpc("has_role", {
+      _user_id: user.id,
+      _role: "admin"
+    });
+
+    if (roleError || !isAdmin) {
+      console.error("Admin role verification failed:", roleError);
+      return new Response(
+        JSON.stringify({ error: "Accès interdit - Droits administrateur requis" }),
+        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Parse and validate request body
+    const body = await req.json();
+    const { to, recipientName, subject, message }: EmailRequest = body;
+
+    // Validate required fields
+    if (!to || !recipientName || !subject || !message) {
+      return new Response(
+        JSON.stringify({ error: "Champs requis manquants" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to)) {
+      return new Response(
+        JSON.stringify({ error: "Format d'email invalide" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate field lengths
+    if (recipientName.length > 200 || subject.length > 500 || message.length > 10000) {
+      return new Response(
+        JSON.stringify({ error: "Champs trop longs" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Sanitize inputs to prevent HTML injection
+    const safeRecipientName = escapeHtml(recipientName);
+    const safeSubject = escapeHtml(subject);
+    const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
+
+    console.log("Admin", user.email, "sending email to:", to);
 
     const emailResponse = await resend.emails.send({
       from: "DanMaket Admin <onboarding@resend.dev>",
       to: [to],
-      subject: subject,
+      subject: safeSubject,
       html: `
         <!DOCTYPE html>
         <html>
@@ -63,7 +146,6 @@ const handler = async (req: Request): Promise<Response> => {
                 padding: 20px;
                 border-radius: 8px;
                 margin: 20px 0;
-                white-space: pre-wrap;
               }
               .footer {
                 text-align: center;
@@ -79,9 +161,9 @@ const handler = async (req: Request): Promise<Response> => {
                 <h1>DanMaket</h1>
               </div>
               <div class="content">
-                <p>Bonjour ${recipientName},</p>
+                <p>Bonjour ${safeRecipientName},</p>
                 <div class="message">
-                  ${message.replace(/\n/g, '<br>')}
+                  ${safeMessage}
                 </div>
                 <p>Cordialement,<br>L'équipe DanMaket</p>
               </div>
@@ -106,7 +188,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in send-admin-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Une erreur est survenue lors de l'envoi de l'email" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

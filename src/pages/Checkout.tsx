@@ -12,22 +12,32 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Truck } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-interface CheckoutForm {
-  nom: string;
-  email: string;
-  telephone: string;
-  adresse: string;
-  ville: string;
-  methodePaiement: string;
-}
+// Validation schema for checkout form
+const checkoutSchema = z.object({
+  nom: z.string().trim().min(1, "Nom requis").max(100, "Nom trop long"),
+  email: z.string().email("Email invalide").max(255, "Email trop long"),
+  telephone: z.string().min(8, "Téléphone invalide (min 8 caractères)").max(20, "Téléphone trop long"),
+  adresse: z.string().trim().min(5, "Adresse trop courte").max(500, "Adresse trop longue"),
+  ville: z.string().trim().min(2, "Ville requise").max(100, "Nom de ville trop long"),
+  methodePaiement: z.enum(["card", "paypal", "cash"], { required_error: "Méthode de paiement requise" }),
+});
+
+type CheckoutForm = z.infer<typeof checkoutSchema>;
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, total, clearCart } = useCart();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<CheckoutForm>();
+  const { register, handleSubmit, formState: { errors } } = useForm<CheckoutForm>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      methodePaiement: "card",
+    },
+  });
 
   if (items.length === 0) {
     navigate("/cart");
@@ -65,7 +75,9 @@ const Checkout = () => {
         .single();
 
       if (commandeError) {
-        console.error("Order creation error:", commandeError);
+        if (import.meta.env.DEV) {
+          console.error("Order creation error:", commandeError);
+        }
         throw new Error("Erreur lors de la création de la commande");
       }
 
@@ -82,7 +94,9 @@ const Checkout = () => {
         .insert(orderItems);
 
       if (itemsError) {
-        console.error("Order items error:", itemsError);
+        if (import.meta.env.DEV) {
+          console.error("Order items error:", itemsError);
+        }
         throw new Error("Erreur lors de l'ajout des articles");
       }
 
@@ -95,7 +109,9 @@ const Checkout = () => {
 
       navigate("/client-dashboard");
     } catch (error: any) {
-      console.error("Checkout error:", error);
+      if (import.meta.env.DEV) {
+        console.error("Checkout error:", error);
+      }
       toast({
         title: "Erreur",
         description: error.message || "Une erreur est survenue lors de la commande",
@@ -129,17 +145,23 @@ const Checkout = () => {
                     <Label htmlFor="nom">Nom complet *</Label>
                     <Input
                       id="nom"
-                      {...register("nom", { required: "Nom requis" })}
+                      {...register("nom")}
                       className={errors.nom ? "border-destructive" : ""}
                     />
+                    {errors.nom && (
+                      <p className="text-sm text-destructive mt-1">{errors.nom.message}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="telephone">Téléphone *</Label>
                     <Input
                       id="telephone"
-                      {...register("telephone", { required: "Téléphone requis" })}
+                      {...register("telephone")}
                       className={errors.telephone ? "border-destructive" : ""}
                     />
+                    {errors.telephone && (
+                      <p className="text-sm text-destructive mt-1">{errors.telephone.message}</p>
+                    )}
                   </div>
                 </div>
 
@@ -148,27 +170,36 @@ const Checkout = () => {
                   <Input
                     id="email"
                     type="email"
-                    {...register("email", { required: "Email requis" })}
+                    {...register("email")}
                     className={errors.email ? "border-destructive" : ""}
                   />
+                  {errors.email && (
+                    <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+                  )}
                 </div>
 
                 <div>
                   <Label htmlFor="adresse">Adresse *</Label>
                   <Textarea
                     id="adresse"
-                    {...register("adresse", { required: "Adresse requise" })}
+                    {...register("adresse")}
                     className={errors.adresse ? "border-destructive" : ""}
                   />
+                  {errors.adresse && (
+                    <p className="text-sm text-destructive mt-1">{errors.adresse.message}</p>
+                  )}
                 </div>
 
                 <div>
                   <Label htmlFor="ville">Ville *</Label>
                   <Input
                     id="ville"
-                    {...register("ville", { required: "Ville requise" })}
+                    {...register("ville")}
                     className={errors.ville ? "border-destructive" : ""}
                   />
+                  {errors.ville && (
+                    <p className="text-sm text-destructive mt-1">{errors.ville.message}</p>
+                  )}
                 </div>
               </div>
 
@@ -199,6 +230,9 @@ const Checkout = () => {
                     </Label>
                   </div>
                 </RadioGroup>
+                {errors.methodePaiement && (
+                  <p className="text-sm text-destructive">{errors.methodePaiement.message}</p>
+                )}
               </div>
             </div>
 
