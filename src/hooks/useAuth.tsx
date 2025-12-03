@@ -90,7 +90,9 @@ export const useAuth = () => {
         setUserRole(selected);
       }
     } catch (error) {
-      console.error("Error fetching user role:", error);
+      if (import.meta.env.DEV) {
+        console.error("Error fetching user role:", error);
+      }
       setUserRole(null);
     } finally {
       setLoading(false);
@@ -155,8 +157,10 @@ export const useAuth = () => {
       // Ensuite déconnecter de Supabase (ignorer les erreurs de session)
       await supabase.auth.signOut({ scope: 'local' });
     } catch (error) {
-      // Ignorer les erreurs de session déjà invalide
-      console.log("Déconnexion avec erreur ignorée:", error);
+      // Ignorer les erreurs de session déjà invalide - only log in dev
+      if (import.meta.env.DEV) {
+        console.log("Déconnexion avec erreur ignorée:", error);
+      }
     } finally {
       // Toujours rediriger vers la page d'accueil
       navigate("/");

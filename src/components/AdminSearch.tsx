@@ -19,7 +19,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -118,7 +117,9 @@ const AdminSearch = () => {
         description: `${(users?.length || 0) + (products?.length || 0) + (orders?.length || 0)} résultats trouvés`,
       });
     } catch (error) {
-      console.error("Search error:", error);
+      if (import.meta.env.DEV) {
+        console.error("Search error:", error);
+      }
       toast({
         title: "Erreur",
         description: "Erreur lors de la recherche",
@@ -162,7 +163,9 @@ const AdminSearch = () => {
       setEmailMessage("");
       setSelectedRecipient(null);
     } catch (error) {
-      console.error("Email error:", error);
+      if (import.meta.env.DEV) {
+        console.error("Email error:", error);
+      }
       toast({
         title: "Erreur",
         description: "Erreur lors de l'envoi de l'email",
