@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import FeaturedProductsManager from "@/components/FeaturedProductsManager";
+import BannersManager from "@/components/BannersManager";
 import AdminSearch from "@/components/AdminSearch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +33,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Users, Package, ShoppingCart, TrendingUp, LogOut, Settings, Ban, Trash2, Eye, MapPin, Phone, Mail, CreditCard, User } from "lucide-react";
+import { Users, Package, ShoppingCart, TrendingUp, LogOut, Settings, Ban, Trash2, Eye, MapPin, Phone, Mail, CreditCard, User, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
@@ -613,6 +614,10 @@ const AdminDashboard = () => {
               <TrendingUp className="h-4 w-4 sm:mr-2" />
               <span className="text-xs sm:text-sm whitespace-nowrap">Vedettes</span>
             </TabsTrigger>
+            <TabsTrigger value="banners" className="flex-col sm:flex-row gap-1 py-2">
+              <ImageIcon className="h-4 w-4 sm:mr-2" />
+              <span className="text-xs sm:text-sm whitespace-nowrap">Bannières</span>
+            </TabsTrigger>
             <TabsTrigger value="search" className="flex-col sm:flex-row gap-1 py-2">
               <Mail className="h-4 w-4 sm:mr-2" />
               <span className="text-xs sm:text-sm whitespace-nowrap">Email</span>
@@ -838,6 +843,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="featured">
             <FeaturedProductsManager />
+          </TabsContent>
+
+          <TabsContent value="banners">
+            <BannersManager />
           </TabsContent>
 
           <TabsContent value="search">

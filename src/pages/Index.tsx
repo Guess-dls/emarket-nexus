@@ -6,6 +6,7 @@ import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
 import SEO from "@/components/SEO";
 import FeaturedCarousel from "@/components/FeaturedCarousel";
+import BannerCarousel from "@/components/BannerCarousel";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -100,6 +101,13 @@ const Index = () => {
       
       <main className="flex-1">
         <Hero />
+
+        {/* Banner Carousel for promotions */}
+        <section className="py-8">
+          <div className="container">
+            <BannerCarousel />
+          </div>
+        </section>
 
         {/* Featured Products Carousel */}
         <section className="py-16">
