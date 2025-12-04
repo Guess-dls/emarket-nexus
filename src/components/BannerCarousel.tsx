@@ -71,19 +71,24 @@ const BannerCarousel = () => {
                   alt={banner.title || "Bannière promotionnelle"}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-6">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 md:p-8">
                   {banner.title && (
-                    <h3 className="text-white text-xl md:text-3xl font-bold mb-4">
+                    <h3 className="text-white text-xl md:text-3xl font-bold mb-4 drop-shadow-lg">
                       {banner.title}
                     </h3>
                   )}
-                  {banner.link && (
+                  {banner.link ? (
                     <Link to={banner.link}>
-                      <Button className="w-fit bg-primary hover:bg-primary/90 text-primary-foreground">
-                        <Eye className="h-4 w-4 mr-2" />
+                      <Button size="lg" className="w-fit bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
+                        <Eye className="h-5 w-5 mr-2" />
                         Voir le produit
                       </Button>
                     </Link>
+                  ) : (
+                    <Button size="lg" className="w-fit bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg" disabled>
+                      <Eye className="h-5 w-5 mr-2" />
+                      Voir
+                    </Button>
                   )}
                 </div>
               </div>
