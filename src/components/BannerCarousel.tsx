@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Link } from "react-router-dom";
@@ -65,39 +65,28 @@ const BannerCarousel = () => {
         <div className="flex">
           {banners.map((banner) => (
             <div key={banner.id} className="flex-[0_0_100%] min-w-0">
-              {banner.link ? (
-                <Link to={banner.link} className="block">
-                  <div className="relative aspect-[16/9] md:aspect-[21/9]">
-                    <img
-                      src={banner.image_url}
-                      alt={banner.title || "Bannière promotionnelle"}
-                      className="w-full h-full object-cover"
-                    />
-                    {banner.title && (
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                        <h3 className="text-white text-xl md:text-3xl font-bold p-6">
-                          {banner.title}
-                        </h3>
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              ) : (
-                <div className="relative aspect-[16/9] md:aspect-[21/9]">
-                  <img
-                    src={banner.image_url}
-                    alt={banner.title || "Bannière promotionnelle"}
-                    className="w-full h-full object-cover"
-                  />
+              <div className="relative aspect-[16/9] md:aspect-[21/9]">
+                <img
+                  src={banner.image_url}
+                  alt={banner.title || "Bannière promotionnelle"}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-6">
                   {banner.title && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                      <h3 className="text-white text-xl md:text-3xl font-bold p-6">
-                        {banner.title}
-                      </h3>
-                    </div>
+                    <h3 className="text-white text-xl md:text-3xl font-bold mb-4">
+                      {banner.title}
+                    </h3>
+                  )}
+                  {banner.link && (
+                    <Link to={banner.link}>
+                      <Button className="w-fit bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Voir le produit
+                      </Button>
+                    </Link>
                   )}
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>
