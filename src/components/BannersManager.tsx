@@ -338,12 +338,12 @@ const BannersManager = () => {
 
             <div className="space-y-2">
               <Label htmlFor="banner-category">Catégorie</Label>
-              <Select value={newCategory} onValueChange={setNewCategory}>
+              <Select value={newCategory || "none"} onValueChange={(val) => setNewCategory(val === "none" ? "" : val)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Aucune catégorie</SelectItem>
+                  <SelectItem value="none">Aucune catégorie</SelectItem>
                   {categories.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.nom}
@@ -494,14 +494,14 @@ const BannersManager = () => {
                     <div className="flex items-center gap-2">
                       <Label className="text-muted-foreground">Catégorie:</Label>
                       <Select 
-                        value={banner.id_categorie || ""} 
-                        onValueChange={(value) => updateBannerField(banner.id, "id_categorie", value)}
+                        value={banner.id_categorie || "none"} 
+                        onValueChange={(value) => updateBannerField(banner.id, "id_categorie", value === "none" ? null : value)}
                       >
                         <SelectTrigger className="h-8 w-40">
                           <SelectValue placeholder="Aucune" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Aucune</SelectItem>
+                          <SelectItem value="none">Aucune</SelectItem>
                           {categories.map((cat) => (
                             <SelectItem key={cat.id} value={cat.id}>
                               {cat.nom}
