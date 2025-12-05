@@ -59,32 +59,49 @@ export type Database = {
       banners: {
         Row: {
           created_at: string
+          expires_at: string | null
           id: string
+          id_categorie: string | null
           image_url: string
           is_active: boolean
           link: string | null
           position: number
+          sub_images: string[] | null
           title: string | null
         }
         Insert: {
           created_at?: string
+          expires_at?: string | null
           id?: string
+          id_categorie?: string | null
           image_url: string
           is_active?: boolean
           link?: string | null
           position?: number
+          sub_images?: string[] | null
           title?: string | null
         }
         Update: {
           created_at?: string
+          expires_at?: string | null
           id?: string
+          id_categorie?: string | null
           image_url?: string
           is_active?: boolean
           link?: string | null
           position?: number
+          sub_images?: string[] | null
           title?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "banners_id_categorie_fkey"
+            columns: ["id_categorie"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       categories: {
         Row: {

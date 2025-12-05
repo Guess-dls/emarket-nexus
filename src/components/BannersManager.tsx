@@ -5,8 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Plus, Upload, Image as ImageIcon, GripVertical } from "lucide-react";
+import { Trash2, Plus, Upload, Image as ImageIcon, GripVertical, X, Calendar } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+
+interface Category {
+  id: string;
+  nom: string;
+  slug: string;
+}
 
 interface Banner {
   id: string;
@@ -15,23 +24,43 @@ interface Banner {
   link: string | null;
   position: number;
   is_active: boolean;
+  id_categorie: string | null;
+  sub_images: string[] | null;
+  expires_at: string | null;
 }
 
 const BannersManager = () => {
   const { toast } = useToast();
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   
   // New banner form
   const [newTitle, setNewTitle] = useState("");
   const [newLink, setNewLink] = useState("");
+  const [newCategory, setNewCategory] = useState<string>("");
+  const [newExpiresAt, setNewExpiresAt] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [subImageFiles, setSubImageFiles] = useState<File[]>([]);
+  const [subImagePreviews, setSubImagePreviews] = useState<string[]>([]);
 
   useEffect(() => {
     loadBanners();
+    loadCategories();
   }, []);
+
+  const loadCategories = async () => {
+    const { data } = await supabase
+      .from("categories")
+      .select("id, nom, slug")
+      .order("nom");
+    
+    if (data) {
+      setCategories(data);
+    }
+  };
 
   const loadBanners = async () => {
     setLoading(true);
@@ -61,6 +90,20 @@ const BannersManager = () => {
     }
   };
 
+  const handleSubImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setSubImageFiles(prev => [...prev, ...files].slice(0, 5));
+      const newPreviews = files.map(f => URL.createObjectURL(f));
+      setSubImagePreviews(prev => [...prev, ...newPreviews].slice(0, 5));
+    }
+  };
+
+  const removeSubImage = (index: number) => {
+    setSubImageFiles(prev => prev.filter((_, i) => i !== index));
+    setSubImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
   const uploadBanner = async () => {
     if (!selectedFile) {
       toast({
@@ -74,7 +117,7 @@ const BannersManager = () => {
     setUploading(true);
 
     try {
-      // Upload image to storage
+      // Upload main image to storage
       const fileExt = selectedFile.name.split(".").pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `banners/${fileName}`;
@@ -85,10 +128,29 @@ const BannersManager = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
+      // Get public URL for main image
       const { data: { publicUrl } } = supabase.storage
         .from("banners")
         .getPublicUrl(filePath);
+
+      // Upload sub-images
+      const subImageUrls: string[] = [];
+      for (const subFile of subImageFiles) {
+        const subExt = subFile.name.split(".").pop();
+        const subFileName = `${Date.now()}_sub_${Math.random().toString(36).substring(7)}.${subExt}`;
+        const subFilePath = `banners/${subFileName}`;
+
+        const { error: subUploadError } = await supabase.storage
+          .from("banners")
+          .upload(subFilePath, subFile);
+
+        if (!subUploadError) {
+          const { data: { publicUrl: subPublicUrl } } = supabase.storage
+            .from("banners")
+            .getPublicUrl(subFilePath);
+          subImageUrls.push(subPublicUrl);
+        }
+      }
 
       // Get next position
       const nextPosition = banners.length > 0 
@@ -104,6 +166,9 @@ const BannersManager = () => {
           link: newLink || null,
           position: nextPosition,
           is_active: true,
+          id_categorie: newCategory || null,
+          sub_images: subImageUrls.length > 0 ? subImageUrls : null,
+          expires_at: newExpiresAt || null,
         });
 
       if (insertError) throw insertError;
@@ -116,8 +181,12 @@ const BannersManager = () => {
       // Reset form
       setNewTitle("");
       setNewLink("");
+      setNewCategory("");
+      setNewExpiresAt("");
       setSelectedFile(null);
       setPreviewUrl(null);
+      setSubImageFiles([]);
+      setSubImagePreviews([]);
       loadBanners();
     } catch (error: any) {
       toast({
@@ -138,6 +207,15 @@ const BannersManager = () => {
 
       // Delete from storage
       await supabase.storage.from("banners").remove([filePath]);
+
+      // Delete sub-images from storage
+      if (banner.sub_images && banner.sub_images.length > 0) {
+        const subPaths = banner.sub_images.map(url => {
+          const parts = url.split("/");
+          return `banners/${parts[parts.length - 1]}`;
+        });
+        await supabase.storage.from("banners").remove(subPaths);
+      }
 
       // Delete from database
       const { error } = await supabase
@@ -179,7 +257,7 @@ const BannersManager = () => {
     }
   };
 
-  const updateBannerField = async (bannerId: string, field: string, value: string) => {
+  const updateBannerField = async (bannerId: string, field: string, value: string | null) => {
     const { error } = await supabase
       .from("banners")
       .update({ [field]: value || null })
@@ -192,6 +270,17 @@ const BannersManager = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const isExpired = (expiresAt: string | null) => {
+    if (!expiresAt) return false;
+    return new Date(expiresAt) < new Date();
+  };
+
+  const getCategoryName = (categoryId: string | null) => {
+    if (!categoryId) return null;
+    const cat = categories.find(c => c.id === categoryId);
+    return cat?.nom || null;
   };
 
   if (loading) {
@@ -228,7 +317,7 @@ const BannersManager = () => {
           
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="banner-image">Image (16:9 recommandé)</Label>
+              <Label htmlFor="banner-image">Image principale (16:9 recommandé)</Label>
               <Input
                 id="banner-image"
                 type="file"
@@ -247,14 +336,69 @@ const BannersManager = () => {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="banner-category">Catégorie</Label>
+              <Select value={newCategory} onValueChange={setNewCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner une catégorie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Aucune catégorie</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.nom}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="banner-expires">Date d'expiration</Label>
+              <Input
+                id="banner-expires"
+                type="datetime-local"
+                value={newExpiresAt}
+                onChange={(e) => setNewExpiresAt(e.target.value)}
+              />
+            </div>
+
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="banner-link">Lien (optionnel)</Label>
               <Input
                 id="banner-link"
                 value={newLink}
                 onChange={(e) => setNewLink(e.target.value)}
-                placeholder="Ex: /category/electronique"
+                placeholder="Ex: /category/electronique ou /product/slug"
               />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="sub-images">Sous-images (max 5)</Label>
+              <Input
+                id="sub-images"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleSubImagesChange}
+                disabled={subImageFiles.length >= 5}
+              />
+              {subImagePreviews.length > 0 && (
+                <div className="flex gap-2 flex-wrap mt-2">
+                  {subImagePreviews.map((preview, index) => (
+                    <div key={index} className="relative w-20 h-20 rounded overflow-hidden border">
+                      <img src={preview} alt={`Sub ${index + 1}`} className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeSubImage(index)}
+                        className="absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-full p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -296,49 +440,102 @@ const BannersManager = () => {
               {banners.map((banner, index) => (
                 <div
                   key={banner.id}
-                  className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30"
+                  className={`flex flex-col gap-3 p-3 border rounded-lg ${
+                    isExpired(banner.expires_at) ? 'bg-destructive/10 border-destructive/30' : 'bg-muted/30'
+                  }`}
                 >
-                  <GripVertical className="h-5 w-5 text-muted-foreground" />
-                  
-                  <span className="text-sm font-medium w-6">{index + 1}</span>
-                  
-                  <div className="w-24 h-14 rounded overflow-hidden flex-shrink-0">
-                    <img
-                      src={banner.image_url}
-                      alt={banner.title || "Bannière"}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="flex items-center gap-3">
+                    <GripVertical className="h-5 w-5 text-muted-foreground" />
+                    
+                    <span className="text-sm font-medium w-6">{index + 1}</span>
+                    
+                    <div className="w-24 h-14 rounded overflow-hidden flex-shrink-0">
+                      <img
+                        src={banner.image_url}
+                        alt={banner.title || "Bannière"}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    <div className="flex-1 space-y-1 min-w-0">
+                      <Input
+                        value={banner.title || ""}
+                        onChange={(e) => updateBannerField(banner.id, "title", e.target.value)}
+                        onBlur={() => loadBanners()}
+                        placeholder="Titre"
+                        className="h-8"
+                      />
+                      <Input
+                        value={banner.link || ""}
+                        onChange={(e) => updateBannerField(banner.id, "link", e.target.value)}
+                        onBlur={() => loadBanners()}
+                        placeholder="Lien"
+                        className="h-8"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={banner.is_active}
+                        onCheckedChange={() => toggleActive(banner)}
+                      />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => deleteBanner(banner)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="flex-1 space-y-1 min-w-0">
-                    <Input
-                      value={banner.title || ""}
-                      onChange={(e) => updateBannerField(banner.id, "title", e.target.value)}
-                      onBlur={() => loadBanners()}
-                      placeholder="Titre"
-                      className="h-8"
-                    />
-                    <Input
-                      value={banner.link || ""}
-                      onChange={(e) => updateBannerField(banner.id, "link", e.target.value)}
-                      onBlur={() => loadBanners()}
-                      placeholder="Lien"
-                      className="h-8"
-                    />
-                  </div>
+                  {/* Additional info row */}
+                  <div className="flex flex-wrap items-center gap-4 text-sm pl-14">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-muted-foreground">Catégorie:</Label>
+                      <Select 
+                        value={banner.id_categorie || ""} 
+                        onValueChange={(value) => updateBannerField(banner.id, "id_categorie", value)}
+                      >
+                        <SelectTrigger className="h-8 w-40">
+                          <SelectValue placeholder="Aucune" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Aucune</SelectItem>
+                          {categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                              {cat.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={banner.is_active}
-                      onCheckedChange={() => toggleActive(banner)}
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => deleteBanner(banner)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="datetime-local"
+                        value={banner.expires_at ? banner.expires_at.slice(0, 16) : ""}
+                        onChange={(e) => updateBannerField(banner.id, "expires_at", e.target.value || null)}
+                        className="h-8 w-48"
+                      />
+                      {isExpired(banner.expires_at) && (
+                        <span className="text-destructive font-medium">Expirée</span>
+                      )}
+                    </div>
+
+                    {banner.sub_images && banner.sub_images.length > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">Sous-images:</span>
+                        <div className="flex gap-1">
+                          {banner.sub_images.map((img, i) => (
+                            <div key={i} className="w-8 h-8 rounded overflow-hidden border">
+                              <img src={img} alt={`Sub ${i + 1}`} className="w-full h-full object-cover" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
