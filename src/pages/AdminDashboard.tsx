@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import FeaturedProductsManager from "@/components/FeaturedProductsManager";
 import BannersManager from "@/components/BannersManager";
 import AdminSearch from "@/components/AdminSearch";
+import ActivityLogsManager from "@/components/ActivityLogsManager";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,7 +34,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Users, Package, ShoppingCart, TrendingUp, LogOut, Settings, Ban, Trash2, Eye, MapPin, Phone, Mail, CreditCard, User, Image as ImageIcon } from "lucide-react";
+import { Users, Package, ShoppingCart, TrendingUp, LogOut, Settings, Ban, Trash2, Eye, MapPin, Phone, Mail, CreditCard, User, Image as ImageIcon, Activity } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
@@ -597,7 +598,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 h-auto">
+          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 h-auto gap-1">
             <TabsTrigger value="users" className="flex-col sm:flex-row gap-1 py-2">
               <Users className="h-4 w-4 sm:mr-2" />
               <span className="text-xs sm:text-sm">Utilisateurs</span>
@@ -609,6 +610,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="orders" className="flex-col sm:flex-row gap-1 py-2">
               <ShoppingCart className="h-4 w-4 sm:mr-2" />
               <span className="text-xs sm:text-sm">Commandes</span>
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex-col sm:flex-row gap-1 py-2">
+              <Activity className="h-4 w-4 sm:mr-2" />
+              <span className="text-xs sm:text-sm">Activités</span>
             </TabsTrigger>
             <TabsTrigger value="featured" className="flex-col sm:flex-row gap-1 py-2">
               <TrendingUp className="h-4 w-4 sm:mr-2" />
@@ -839,6 +844,10 @@ const AdminDashboard = () => {
                 </Table>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="activity">
+            <ActivityLogsManager />
           </TabsContent>
 
           <TabsContent value="featured">
